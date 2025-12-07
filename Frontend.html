@@ -598,21 +598,22 @@
     }
 
     /* Charts */
-    #guess-pie-chart,
-    #top-girls-chart,
-    #top-boys-chart,
-    #relation-chart {
+    .chart-block {
       width: 100% !important;
       max-width: 100%;
       height: 250px !important;
       margin: 0 auto var(--spacing-md);
+      background: radial-gradient(circle at 15% 20%, rgba(123, 207, 221, 0.08), transparent 35%),
+        radial-gradient(circle at 80% 10%, rgba(249, 225, 243, 0.12), transparent 30%),
+        linear-gradient(180deg, #f9fcff 0%, #fdf7ff 100%);
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.05);
+      padding: 8px;
     }
 
     @media (min-width: 500px) {
-      #guess-pie-chart,
-      #top-girls-chart,
-      #top-boys-chart,
-      #relation-chart {
+      .chart-block {
         height: 300px !important;
       }
     }
@@ -1090,7 +1091,7 @@
 
         <!-- 2. Gender Guess Breakdown -->
         <h3>Gender Guess Breakdown</h3>
-        <div id="guess-pie-chart" style="height: 300px; margin-bottom: 20px;"></div>
+        <div id="guess-pie-chart" class="chart-block" style="height: 300px; margin-bottom: 20px;"></div>
 
         <!-- 3. Correct Guessers & Winners -->
         <div style="background: var(--color-background-light); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
@@ -1109,7 +1110,7 @@
 
         <!-- 4. Relation Breakdown -->
         <h3>Relation Suggestion Breakdown</h3>
-        <div id="relation-chart" style="height: 300px; margin-bottom: 20px;"></div>
+        <div id="relation-chart" class="chart-block" style="height: 300px; margin-bottom: 20px;"></div>
 
         <!-- 5. Final Ranking -->
         <h3>Final Ranking</h3>
@@ -1119,10 +1120,10 @@
 
         <!-- 6. Top Charts (At the end) -->
         <h3>Top Girl Names</h3>
-        <div id="top-girls-chart" style="height: 300px;"></div>
+        <div id="top-girls-chart" class="chart-block" style="height: 300px;"></div>
 
         <h3>Top Boy Names</h3>
-        <div id="top-boys-chart" style="height: 300px;"></div>
+        <div id="top-boys-chart" class="chart-block" style="height: 300px;"></div>
 
       </div>
 
@@ -2290,15 +2291,20 @@ function renderRankingList(rankedNames) {
 }
 
 function drawCharts(chartData) {
-  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const pastelPalette = ['#7bcfdd', '#f6a6b2', '#ffd580', '#9bb5ff', '#8dd6c0', '#c6a6f7'];
+  const chartSurface = prefersDark ? '#111827' : '#f9fbff';
+  const chartText = prefersDark ? '#e5e7eb' : '#1f2937';
   const chartOptions = {
-    backgroundColor: isDarkMode ? '#1e1e1e' : 'white',
-    titleTextStyle: { color: isDarkMode ? '#e0e0e0' : '#333' },
-    legend: { textStyle: { color: isDarkMode ? '#e0e0e0' : '#333' } },
-    hAxis: { textStyle: { color: isDarkMode ? '#e0e0e0' : '#333' } },
-    vAxis: { textStyle: { color: isDarkMode ? '#e0e0e0' : '#333' } },
-    colors: ['#ff6f61', '#ffc72c', '#4CAF50', '#2196F3', '#9C27B0'],
-    chartArea: { width: '80%', height: '70%' },
+    backgroundColor: 'transparent',
+    titleTextStyle: { color: chartText, fontSize: 14, bold: true },
+    legend: { textStyle: { color: chartText, fontSize: 12 } },
+    hAxis: { textStyle: { color: chartText } },
+    vAxis: { textStyle: { color: chartText } },
+    colors: pastelPalette,
+    chartArea: { width: '82%', height: '70%', backgroundColor: chartSurface },
+    tooltip: { textStyle: { color: chartText } },
+    pieHole: 0.08,
   };
 
   try {
@@ -2306,21 +2312,39 @@ function drawCharts(chartData) {
     if (chartData.guessPie && $('#guess-pie-chart')) {
       const pieData = google.visualization.arrayToDataTable(chartData.guessPie);
       const pieChart = new google.visualization.PieChart($('#guess-pie-chart'));
-      pieChart.draw(pieData, { ...chartOptions, title: 'Gender Guess Breakdown' });
+      pieChart.draw(pieData, {
+        ...chartOptions,
+        title: 'Gender Guess Breakdown',
+        slices: {
+          0: { color: '#7bb4ff' },
+          1: { color: '#f6a6b2' },
+          2: { color: '#ffd580' }
+        },
+      });
     }
 
     // Top Girl Names Bar Chart
     if (chartData.topNames && chartData.topNames.girls && $('#top-girls-chart')) {
       const girlData = google.visualization.arrayToDataTable(chartData.topNames.girls);
       const girlChart = new google.visualization.BarChart($('#top-girls-chart'));
-      girlChart.draw(girlData, { ...chartOptions, title: 'Top Girl Names', legend: { position: 'none' } });
+      girlChart.draw(girlData, {
+        ...chartOptions,
+        colors: ['#f6a6b2'],
+        title: 'Top Girl Names',
+        legend: { position: 'none' }
+      });
     }
 
     // Top Boy Names Bar Chart
     if (chartData.topNames && chartData.topNames.boys && $('#top-boys-chart')) {
       const boyData = google.visualization.arrayToDataTable(chartData.topNames.boys);
       const boyChart = new google.visualization.BarChart($('#top-boys-chart'));
-      boyChart.draw(boyData, { ...chartOptions, title: 'Top Boy Names', legend: { position: 'none' } });
+      boyChart.draw(boyData, {
+        ...chartOptions,
+        colors: ['#7bb4ff'],
+        title: 'Top Boy Names',
+        legend: { position: 'none' }
+      });
     }
 
     // Relation Breakdown Pie Chart
