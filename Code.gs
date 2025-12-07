@@ -394,11 +394,12 @@ function _getStatus(data, access) {
       const nameLower = name.toLowerCase();
       const genderLower = gender.toLowerCase();
 
-      if (!distinctNames.has(nameLower + "|" + genderLower)) {
-        distinctNames.add(nameLower + "|" + genderLower);
-        if (genderLower === 'girl') girlCount++;
-        if (genderLower === 'boy') boyCount++;
-      }
+      // Track every valid submission (not just unique names) for global counters
+      if (genderLower === 'girl') girlCount++;
+      if (genderLower === 'boy') boyCount++;
+
+      // Keep distinct name tracking in case it is needed elsewhere
+      distinctNames.add(nameLower + "|" + genderLower);
     }
   }
 
@@ -413,7 +414,8 @@ function _getStatus(data, access) {
     counters: {
       girl: girlCount,
       boy: boyCount,
-      total: distinctNames.size,
+      total: girlCount + boyCount,
+      unique: distinctNames.size,
     },
     config: {
       maxSuggestions: config.MAX_SUGGESTIONS_PER_PERSON || 10,
