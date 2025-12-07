@@ -1231,19 +1231,11 @@ function renderUniqueCounterMessage() {
   const totalSubmitted = counters.total || 0;
   const girlCount = counters.girl || 0;
   const boyCount = counters.boy || 0;
-  const uniqueTotal = counters.unique || 0;
-  const uniqueGirl = counters.uniqueGirl || 0;
-  const uniqueBoy = counters.uniqueBoy || 0;
-
   const totalText = totalSubmitted > 0
     ? `${totalSubmitted} name${totalSubmitted === 1 ? '' : 's'} submitted (${girlCount} girl, ${boyCount} boy).`
     : 'No names submitted yet.';
 
-  const uniqueText = uniqueTotal > 0
-    ? `For voting, duplicate names will be merged into ${uniqueTotal} unique option${uniqueTotal === 1 ? '' : 's'} (${uniqueGirl} girl, ${uniqueBoy} boy).`
-    : 'For voting, duplicate names will be merged once names are submitted.';
-
-  messageEl.textContent = `${totalText} ${uniqueText}`;
+  messageEl.textContent = totalText;
 }
 
 function showToast(message, type = '', duration = 3000) {
@@ -1490,15 +1482,6 @@ async function saveProfileFromForm() {
 }
 
 function editProfile() {
-  const confirmed = confirm(
-    '⚠️ Are you sure you want to change your profile?\n\n' +
-    'Note: Your gender guess is recorded for the lucky draw. ' +
-    'Changing it now will NOT affect your previous suggestions, ' +
-    'but will apply to any new suggestions you make.'
-  );
-  
-  if (!confirmed) return;
-  
   const currentRelation = $('#suggest-relation-value').value;
   const currentGuess = $('#suggest-guess-value').value;
   
