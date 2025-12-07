@@ -4,7 +4,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="theme-color" content="#88B04B">
+  <meta name="theme-color" content="#9ed7e5" id="meta-theme-color">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="format-detection" content="telephone=no">
@@ -12,12 +12,12 @@
   <script src="https://www.gstatic.com/charts/loader.js"></script>
   <style>
     :root {
-      --color-primary: #88B04B;
-      --color-secondary: #ffecb3;
-      --color-background-light: #fff9fb;
-      --color-text-light: #333333;
+      --color-primary: #7bcfdd;
+      --color-secondary: #f9e1f3;
+      --color-background-light: #fcfdff;
+      --color-text-light: #2c2c2c;
       --color-card-light: #ffffff;
-      --color-shadow: rgba(0, 0, 0, 0.06);
+      --color-shadow: rgba(0, 0, 0, 0.05);
       --touch-target: 44px;
       --spacing-sm: 8px;
       --spacing-md: 16px;
@@ -25,13 +25,13 @@
     }
 
     body.theme-girl {
-      --color-primary: #E8ADAA;
-      --color-secondary: #F7CAC9;
+      --color-primary: #f09ab8;
+      --color-secondary: #ffe0ed;
     }
 
     body.theme-boy {
-      --color-primary: #5B92E5;
-      --color-secondary: #9FC1E9;
+      --color-primary: #7fb4ff;
+      --color-secondary: #dfeaff;
     }
 
     * {
@@ -48,7 +48,9 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: linear-gradient(135deg, #ffeef5 0%, #fff9fb 40%, #f7fcff 100%);
+      background: radial-gradient(circle at 20% 20%, rgba(255, 224, 237, 0.6), transparent 35%),
+        radial-gradient(circle at 80% 10%, rgba(223, 234, 255, 0.8), transparent 30%),
+        linear-gradient(135deg, #fdf7ff 0%, #f3fbff 40%, #ffffff 100%);
       color: var(--color-text-light);
       line-height: 1.5;
       min-height: 100vh;
@@ -56,17 +58,17 @@
     }
 
     .container {
-      max-width: 600px;
+      max-width: 640px;
       margin: 0 auto;
-      padding: var(--spacing-md);
-      padding-bottom: 80px;
+      padding: clamp(14px, 4vw, 22px);
+      padding-bottom: 82px;
     }
 
     /* Header */
     header {
       text-align: center;
       padding: var(--spacing-lg) var(--spacing-md);
-      border-bottom: 3px dashed var(--color-primary);
+      border-bottom: 3px dashed rgba(0, 0, 0, 0.05);
       margin-bottom: var(--spacing-md);
     }
 
@@ -110,15 +112,26 @@
     .card {
       background-color: var(--color-card-light);
       padding: var(--spacing-lg);
-      border-radius: 15px;
-      box-shadow: 0 4px 12px var(--color-shadow);
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
       margin-bottom: var(--spacing-md);
+      border: 1px solid rgba(0, 0, 0, 0.03);
     }
 
     @media (max-width: 400px) {
       .card {
         padding: var(--spacing-md);
-        border-radius: 12px;
+        border-radius: 14px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .counter-box {
+        flex-direction: column;
+      }
+
+      header {
+        padding: var(--spacing-md) var(--spacing-md);
       }
     }
 
@@ -131,10 +144,10 @@
       min-height: var(--touch-target);
       padding: 12px var(--spacing-md);
       margin-bottom: var(--spacing-sm);
-      border: 2px solid #e0e0e0;
+      border: 2px solid rgba(0, 0, 0, 0.05);
       border-radius: 10px;
       font-size: 16px; /* Prevents zoom on iOS */
-      background-color: var(--color-background-light);
+      background-color: #fdfdff;
       color: var(--color-text-light);
       -webkit-appearance: none;
       appearance: none;
@@ -188,6 +201,12 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0.4; }
+      60% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
     button:active {
       transform: scale(0.97);
       opacity: 0.9;
@@ -231,26 +250,52 @@
       justify-content: space-around;
       gap: var(--spacing-sm);
       margin-bottom: var(--spacing-md);
+      align-items: stretch;
     }
 
     .counter-item {
       flex: 1;
       padding: var(--spacing-md);
-      border-radius: 12px;
+      border-radius: 14px;
       background-color: var(--color-background-light);
       border: 2px solid var(--color-secondary);
       text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
     }
 
-    .counter-item small {
-      font-size: 0.8rem;
-      color: #666;
+    .counter-icon {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto var(--spacing-sm);
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 1.3rem;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
     }
 
-    .counter-item h3 {
+    .counter-number {
       margin: 4px 0 0 0;
       font-size: clamp(1.5rem, 6vw, 2rem);
       color: var(--color-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .counter-number.animate {
+      animation: popIn 0.45s ease;
+    }
+
+    .counter-item small {
+      font-size: 0.85rem;
+      color: #666;
+      letter-spacing: 0.02em;
     }
 
     /* Profile Display */
@@ -447,9 +492,10 @@
     .quota-meters {
       margin-bottom: var(--spacing-md);
       padding: var(--spacing-md);
-      border: 1px solid #ddd;
-      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 14px;
       background-color: var(--color-background-light);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
     }
 
     .quota-meters h4 {
@@ -459,7 +505,7 @@
 
     .meter-bar {
       height: 8px;
-      background-color: #e0e0e0;
+      background-color: rgba(0, 0, 0, 0.06);
       border-radius: 4px;
       margin-bottom: 4px;
       overflow: hidden;
@@ -470,6 +516,42 @@
       background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
       border-radius: 4px;
       transition: width 0.3s ease;
+    }
+
+    .quota-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--spacing-sm);
+      margin: 10px 0 var(--spacing-md);
+    }
+
+    .quota-chip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border-radius: 12px;
+      background: #f7fbff;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      color: #444;
+      gap: 10px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .quota-chip .badge-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: #fff;
+      font-size: 1.2rem;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.14);
+    }
+
+    .quota-chip strong {
+      color: var(--color-primary);
     }
 
     /* Reveal Section */
@@ -787,38 +869,6 @@
       margin: var(--spacing-md) 0;
     }
 
-    /* Dark Mode – softer neutral theme, no ugly dark blue */
-    /* @media (prefers-color-scheme: dark) {
-      :root {
-        --color-background-light: #181818;
-        --color-text-light: #f5f5f5;
-        --color-card-light: #242424;
-        --color-shadow: rgba(0, 0, 0, 0.5);
-      }
-
-      body {
-        background: linear-gradient(135deg, #262626 0%, #1e1e1e 40%, #2b2428 100%);
-      }
-
-      input[type="text"],
-      input[type="email"],
-      textarea,
-      select {
-        background-color: #242424;
-        border-color: #444;
-        color: #f5f5f5;
-      }
-
-      .card {
-        border: 1px solid #333;
-      }
-
-      hr {
-        border-top: 1px dashed #444;
-      }
-    } *\
-
-
     /* Reduced Motion */
     @media (prefers-reduced-motion: reduce) {
       *,
@@ -888,16 +938,19 @@
 
         <div class="counter-box">
           <div class="counter-item">
+            <div class="counter-icon">🎀</div>
             <small><strong>Girl Names</strong></small>
-            <h3 id="girl-count">0</h3>
+            <div id="girl-count" class="counter-number">0</div>
           </div>
           <div class="counter-item">
+            <div class="counter-icon">🧢</div>
             <small><strong>Boy Names</strong></small>
-            <h3 id="boy-count">0</h3>
+            <div id="boy-count" class="counter-number">0</div>
           </div>
         </div>
 
         <p id="nomination-quota-message" style="font-weight: bold; color: #555; text-align:center;"></p>
+        <div id="nomination-quota-visual" class="quota-summary"></div>
 
         <!-- ============================================ -->
         <!-- PROFILE SETUP (Asked Once) -->
@@ -1142,6 +1195,29 @@ function hideLoading() {
   $('#loading-overlay').style.display = 'none';
 }
 
+function applyThemeMetaColor() {
+  const meta = document.querySelector('#meta-theme-color');
+  if (!meta) return;
+
+  const primary = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-primary')
+    .trim();
+
+  meta.setAttribute('content', primary || '#7bcfdd');
+}
+
+function updateCounterValue(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (el.textContent !== String(value)) {
+    el.textContent = value;
+    el.classList.remove('animate');
+    void el.offsetWidth;
+    el.classList.add('animate');
+  }
+}
+
 function showToast(message, type = '', duration = 3000) {
   const toast = $('#toast');
   if (!toast) return;
@@ -1358,6 +1434,8 @@ function handleThemeChange(gender) {
     document.body.className = '';
     localStorage.removeItem('funfairTheme');
   }
+
+  applyThemeMetaColor();
 }
 
 async function saveProfileFromForm() {
@@ -1412,8 +1490,8 @@ async function renderNominations() {
     greetingEl.textContent = `Welcome, ${STATE.person}!`;
   }
 
-  $('#girl-count').textContent = (STATE.counters && STATE.counters.girl) || 0;
-  $('#boy-count').textContent = (STATE.counters && STATE.counters.boy) || 0;
+  updateCounterValue('girl-count', (STATE.counters && STATE.counters.girl) || 0);
+  updateCounterValue('boy-count', (STATE.counters && STATE.counters.boy) || 0);
 
   // Set up button handlers
   const suggestBtn = $('#suggest-button');
@@ -1464,6 +1542,7 @@ function cancelEdit() {
 
 function updateNominationQuotaMessage(items) {
   const msgEl = $('#nomination-quota-message');
+  const chipsEl = $('#nomination-quota-visual');
   if (!msgEl) return;
 
   const maxPerGender =
@@ -1473,6 +1552,7 @@ function updateNominationQuotaMessage(items) {
 
   if (!maxPerGender || !Array.isArray(items)) {
     msgEl.textContent = '';
+    if (chipsEl) chipsEl.innerHTML = '';
     return;
   }
 
@@ -1491,6 +1571,25 @@ function updateNominationQuotaMessage(items) {
   msgEl.textContent =
     `Your remaining quota – Girls: ${remainingGirls}/${maxPerGender}, ` +
     `Boys: ${remainingBoys}/${maxPerGender}`;
+
+  if (chipsEl) {
+    chipsEl.innerHTML = `
+      <div class="quota-chip">
+        <span class="badge-icon">🎀</span>
+        <div>
+          <div><strong>Girls</strong></div>
+          <small>${remainingGirls} left · Max ${maxPerGender}</small>
+        </div>
+      </div>
+      <div class="quota-chip">
+        <span class="badge-icon">🧢</span>
+        <div>
+          <div><strong>Boys</strong></div>
+          <small>${remainingBoys} left · Max ${maxPerGender}</small>
+        </div>
+      </div>
+    `;
+  }
 }
 
 
@@ -2251,7 +2350,10 @@ function initApp() {
   const savedTheme = localStorage.getItem('funfairTheme');
   if (savedTheme) {
     document.body.className = savedTheme;
+    applyThemeMetaColor();
   }
+
+  applyThemeMetaColor();
 
   hideLoading();
 
