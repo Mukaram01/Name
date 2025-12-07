@@ -381,6 +381,8 @@ function _getStatus(data, access) {
   let girlCount = 0;
   let boyCount = 0;
   const distinctNames = new Set();
+  const distinctGirlNames = new Set();
+  const distinctBoyNames = new Set();
 
   // CRITICAL FIX 4: Handle empty Suggestions sheet (only header row)
   if (suggestions.length > 1) {
@@ -400,6 +402,8 @@ function _getStatus(data, access) {
 
       // Keep distinct name tracking in case it is needed elsewhere
       distinctNames.add(nameLower + "|" + genderLower);
+      if (genderLower === 'girl') distinctGirlNames.add(nameLower);
+      if (genderLower === 'boy') distinctBoyNames.add(nameLower);
     }
   }
 
@@ -416,6 +420,8 @@ function _getStatus(data, access) {
       boy: boyCount,
       total: girlCount + boyCount,
       unique: distinctNames.size,
+      uniqueGirl: distinctGirlNames.size,
+      uniqueBoy: distinctBoyNames.size,
     },
     config: {
       maxSuggestions: config.MAX_SUGGESTIONS_PER_PERSON || 10,
