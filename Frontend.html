@@ -603,13 +603,14 @@
       max-width: 100%;
       height: 250px !important;
       margin: 0 auto var(--spacing-md);
-      background: radial-gradient(circle at 15% 20%, rgba(123, 207, 221, 0.08), transparent 35%),
-        radial-gradient(circle at 80% 10%, rgba(249, 225, 243, 0.12), transparent 30%),
-        linear-gradient(180deg, #f9fcff 0%, #fdf7ff 100%);
+      background:
+        radial-gradient(circle at 18% 20%, rgba(123, 207, 221, 0.18), transparent 34%),
+        radial-gradient(circle at 78% 12%, rgba(249, 225, 243, 0.2), transparent 32%),
+        linear-gradient(150deg, rgba(123, 207, 221, 0.06) 0%, rgba(249, 225, 243, 0.08) 60%, #ffffff 100%);
       border-radius: 16px;
       border: 1px solid rgba(0, 0, 0, 0.05);
       box-shadow: 0 14px 32px rgba(0, 0, 0, 0.05);
-      padding: 8px;
+      padding: 10px;
     }
 
     @media (min-width: 500px) {
@@ -2292,11 +2293,11 @@ function renderRankingList(rankedNames) {
 
 function drawCharts(chartData) {
   const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const pastelPalette = ['#7bcfdd', '#f6a6b2', '#ffd580', '#9bb5ff', '#8dd6c0', '#c6a6f7'];
-  const chartSurface = prefersDark ? '#111827' : '#f9fbff';
+  const pastelPalette = ['#5b92e5', '#e684b9', '#f7c948', '#55d8c1', '#9b6cf3', '#7bcfdd'];
+  const chartSurface = prefersDark ? '#111827' : '#f7faff';
   const chartText = prefersDark ? '#e5e7eb' : '#1f2937';
   const chartOptions = {
-    backgroundColor: 'transparent',
+    backgroundColor: chartSurface,
     titleTextStyle: { color: chartText, fontSize: 14, bold: true },
     legend: { textStyle: { color: chartText, fontSize: 12 } },
     hAxis: { textStyle: { color: chartText } },
@@ -2316,9 +2317,9 @@ function drawCharts(chartData) {
         ...chartOptions,
         title: 'Gender Guess Breakdown',
         slices: {
-          0: { color: '#7bb4ff' },
-          1: { color: '#f6a6b2' },
-          2: { color: '#ffd580' }
+          0: { color: '#5b92e5' },
+          1: { color: '#e684b9' },
+          2: { color: '#f7c948' }
         },
       });
     }
@@ -2329,7 +2330,7 @@ function drawCharts(chartData) {
       const girlChart = new google.visualization.BarChart($('#top-girls-chart'));
       girlChart.draw(girlData, {
         ...chartOptions,
-        colors: ['#f6a6b2'],
+        colors: ['#e684b9'],
         title: 'Top Girl Names',
         legend: { position: 'none' }
       });
@@ -2341,7 +2342,7 @@ function drawCharts(chartData) {
       const boyChart = new google.visualization.BarChart($('#top-boys-chart'));
       boyChart.draw(boyData, {
         ...chartOptions,
-        colors: ['#7bb4ff'],
+        colors: ['#5b92e5'],
         title: 'Top Boy Names',
         legend: { position: 'none' }
       });
