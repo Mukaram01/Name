@@ -15,7 +15,7 @@ const SH_WINNERS = "Winners";
 
 // Column Indices (0-indexed)
 const COL_PEOPLE_NAME = 0;
-const COL_PEOPLE_TOKEN = 1;
+const COL_PEOPLE_GUESS = 1; // Stores the user's current gender guess
 const COL_PEOPLE_RELATION = 2;
 const COL_PEOPLE_ROLE = 3; // New: 'Admin', 'Parent', 'Voter'
 
@@ -124,6 +124,8 @@ function _handleApiRequest(mode, data) {
     'my_suggestions': { handler: _getMySuggestions, role: 'Voter' },
     'update_suggestion': { handler: _updateSuggestion, role: 'Voter' },
     'delete_suggestion': { handler: _deleteSuggestion, role: 'Voter' },
+    'profile': { handler: _getProfile, role: 'Voter' },
+    'update_profile': { handler: _updateUserProfile, role: 'Voter' },
 
     // Admin Only
     'admin': { handler: _handleAdmin, role: 'Admin' },
@@ -1135,7 +1137,7 @@ function setupSheets() {
   ];
   const headers = {
     [SH_CONFIG]: ["Key", "Value", "Description"],
-    [SH_PEOPLE]: ["Name", "Device Token", "Relation", "Role"], // Added Role
+    [SH_PEOPLE]: ["Name", "Gender Guess", "Relation", "Role"], // Added Role
     [SH_SUGGESTIONS]: ["Name", "Gender", "Suggester", "Gender Guess", "Relation", "Timestamp", "Meaning"],
     [SH_VOTES]: ["Name", "Gender", "Voter", "Score", "Timestamp"],
     [SH_REQUESTS]: ["Requester", "Type", "Details", "Status", "Timestamp"],
@@ -1172,11 +1174,166 @@ function setupSheets() {
   const peopleSheet = _getSheet(SH_PEOPLE);
   if (peopleSheet.getLastRow() === 1) {
     peopleSheet.getRange("A2:D4").setValues([
-      ["Admin User", "ADMIN_TOKEN_123", "Parent", "Admin"],
-      ["Parent 1", "PARENT_TOKEN_456", "Parent", "Parent"],
-      ["Voter 1", "VOTER_TOKEN_789", "Khala", "Voter"],
+      ["Admin User", "Girl", "Parent", "Admin"],
+      ["Parent 1", "Boy", "Parent", "Parent"],
+      ["Voter 1", "Khala", "Khala", "Voter"],
     ]);
   }
+}
+
+
+// ====================================================================================
+// PROFILE MANAGEMENT
+// ====================================================================================
+
+function _deriveProfileFromSuggestions(person) {
+  const suggestionsSheet = _getSheet(SH_SUGGESTIONS);
+  const values = suggestionsSheet.getDataRange().getValues();
+
+  if (values.length > 1) {
+    for (let i = 1; i < values.length; i++) {
+      const row = values[i];
+      const suggester = _normalizePersonName(row[COL_SUGGESTIONS_SUGGESTER]);
+
+      if (suggester === person) {
+        return {
+          relation: row[COL_SUGGESTIONS_RELATION] || '',
+          guess: row[COL_SUGGESTIONS_GUESS] || ''
+        };
+      }
+    }
+  }
+
+  return { relation: '', guess: '' };
+}
+
+function _getProfile(data, access) {
+  const personRaw = data.person || '';
+  const person = _normalizePersonName(personRaw);
+
+  if (!person) {
+    return { success: false, error: "Missing person identifier." };
+  }
+
+  const cache = CacheService.getScriptCache();
+  const cacheKey = `profile_${person}`;
+  const cached = cache.get(cacheKey);
+
+  if (cached) {
+    try {
+      return { success: true, profile: JSON.parse(cached) };
+    } catch (e) {
+      cache.remove(cacheKey);
+    }
+  }
+
+  const peopleSheet = _getSheet(SH_PEOPLE);
+  const people = peopleSheet.getDataRange().getValues();
+  let relation = '';
+  let guess = '';
+
+  if (people.length > 1) {
+    for (let i = 1; i < people.length; i++) {
+      const row = people[i];
+      const rowName = _normalizePersonName(row[COL_PEOPLE_NAME]);
+
+      if (rowName === person) {
+        relation = row[COL_PEOPLE_RELATION] || '';
+        guess = row[COL_PEOPLE_GUESS] || '';
+        break;
+      }
+    }
+  }
+
+  if (!relation || !guess) {
+    const inferred = _deriveProfileFromSuggestions(person);
+    relation = relation || inferred.relation || access.relation || '';
+    guess = guess || inferred.guess || '';
+  }
+
+  const profile = { relation, guess };
+  cache.put(cacheKey, JSON.stringify(profile), 300);
+
+  return { success: true, profile: profile };
+}
+
+function _syncSuggestionRelations(person, relation, previousRelation) {
+  if (!relation) return;
+  if (previousRelation && previousRelation === relation) return;
+
+  const suggestionsSheet = _getSheet(SH_SUGGESTIONS);
+  const values = suggestionsSheet.getDataRange().getValues();
+
+  if (values.length <= 1) return;
+
+  const rowsToUpdate = [];
+
+  for (let i = 1; i < values.length; i++) {
+    const row = values[i];
+    const suggester = _normalizePersonName(row[COL_SUGGESTIONS_SUGGESTER]);
+
+    if (suggester === person && row[COL_SUGGESTIONS_RELATION] !== relation) {
+      rowsToUpdate.push(i + 1);
+    }
+  }
+
+  rowsToUpdate.forEach(row => {
+    suggestionsSheet.getRange(row, COL_SUGGESTIONS_RELATION + 1).setValue(relation);
+  });
+}
+
+function _updateUserProfile(data, access) {
+  const personRaw = data.person || '';
+  const person = _normalizePersonName(personRaw);
+  const relation = String(data.relation || '').trim();
+  const guess = String(data.guess || '').trim();
+
+  if (!person) {
+    return { success: false, error: "Missing person identifier." };
+  }
+
+  if (!relation || !guess) {
+    return { success: false, error: "Relation and guess are required." };
+  }
+
+  const peopleSheet = _getSheet(SH_PEOPLE);
+  const people = peopleSheet.getDataRange().getValues();
+  let rowIndex = -1;
+  let existingRelation = '';
+  let storedName = personRaw;
+
+  if (people.length > 1) {
+    for (let i = 1; i < people.length; i++) {
+      const row = people[i];
+      const rowName = _normalizePersonName(row[COL_PEOPLE_NAME]);
+
+      if (rowName === person) {
+        rowIndex = i + 1; // Convert to 1-based index for sheet operations
+        storedName = row[COL_PEOPLE_NAME] || personRaw;
+        existingRelation = row[COL_PEOPLE_RELATION] || '';
+        break;
+      }
+    }
+  }
+
+  const role = (rowIndex !== -1 && people[rowIndex - 1][COL_PEOPLE_ROLE])
+    ? people[rowIndex - 1][COL_PEOPLE_ROLE]
+    : (access.role || 'Voter');
+
+  if (rowIndex === -1) {
+    peopleSheet.appendRow([storedName, guess, relation, role]);
+  } else {
+    peopleSheet.getRange(rowIndex, 1, 1, 4).setValues([[storedName, guess, relation, role]]);
+  }
+
+  _syncSuggestionRelations(person, relation, existingRelation);
+
+  const cache = CacheService.getScriptCache();
+  const cacheKey = `profile_${person}`;
+  cache.remove(cacheKey);
+  cache.put(cacheKey, JSON.stringify({ relation, guess }), 300);
+
+  return { success: true, profile: { relation, guess } };
 }
 
 

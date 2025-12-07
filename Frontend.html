@@ -1388,10 +1388,30 @@ function updateUI() {
 // --- PROFILE MANAGEMENT ---
 
 async function loadUserProfile() {
+  try {
+    const backendProfile = await postJSON({ mode: 'profile' });
+    if (backendProfile.success && backendProfile.profile) {
+      const profile = {
+        relation: backendProfile.profile.relation || '',
+        guess: backendProfile.profile.guess || ''
+      };
+
+      if (profile.relation && profile.guess) {
+        saveUserProfile(profile);
+        return profile;
+      }
+    }
+  } catch (e) {
+    console.warn('Could not load profile from backend:', e);
+  }
+
   const savedProfile = localStorage.getItem(`funfair_profile_${STATE.person.toLowerCase()}`);
   if (savedProfile) {
     try {
-      return JSON.parse(savedProfile);
+      const parsed = JSON.parse(savedProfile);
+      if (parsed.relation && parsed.guess) {
+        return parsed;
+      }
     } catch (e) {
       console.warn('Could not parse saved profile:', e);
     }
@@ -1405,14 +1425,14 @@ async function loadUserProfile() {
         relation: firstSuggestion.relation || '',
         guess: firstSuggestion.guess || ''
       };
-      
+
       if (profile.relation && profile.guess) {
         saveUserProfile(profile);
         return profile;
       }
     }
   } catch (e) {
-    console.warn('Could not load profile from backend:', e);
+    console.warn('Could not load profile from backend suggestions:', e);
   }
 
   return null;
@@ -1473,10 +1493,20 @@ async function saveProfileFromForm() {
     $('#profile-message').style.color = 'red';
     return;
   }
-  
-  const profile = { relation, guess };
+
+  showLoading();
+  const res = await postJSON({ mode: 'update_profile', relation, guess });
+  hideLoading();
+
+  if (!res.success) {
+    $('#profile-message').textContent = res.error || 'Could not save your profile. Please try again.';
+    $('#profile-message').style.color = 'red';
+    return;
+  }
+
+  const profile = res.profile || { relation, guess };
   saveUserProfile(profile);
-  showToast(`Profile saved! You guessed ${guess} 🎉`, 'success');
+  showToast(`Profile saved! You guessed ${profile.guess} 🎉`, 'success');
   showProfileDisplay(profile);
   await loadMySuggestions();
 }
