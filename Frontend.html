@@ -1,0 +1,2275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#88B04B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <title>Baby Name Suggestion Funfair</title>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <style>
+    :root {
+      --color-primary: #88B04B;
+      --color-secondary: #ffecb3;
+      --color-background-light: #fff9fb;
+      --color-text-light: #333333;
+      --color-card-light: #ffffff;
+      --color-shadow: rgba(0, 0, 0, 0.06);
+      --touch-target: 44px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+    }
+
+    body.theme-girl {
+      --color-primary: #E8ADAA;
+      --color-secondary: #F7CAC9;
+    }
+
+    body.theme-boy {
+      --color-primary: #5B92E5;
+      --color-secondary: #9FC1E9;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #ffeef5 0%, #fff9fb 40%, #f7fcff 100%);
+      color: var(--color-text-light);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: var(--spacing-md);
+      padding-bottom: 80px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: var(--spacing-lg) var(--spacing-md);
+      border-bottom: 3px dashed var(--color-primary);
+      margin-bottom: var(--spacing-md);
+    }
+
+    h1 {
+      color: var(--color-primary);
+      font-size: clamp(1.5rem, 6vw, 2.5rem);
+      margin: 0 0 var(--spacing-sm) 0;
+      text-shadow: 2px 2px 0 var(--color-secondary);
+      font-family: 'Pacifico', cursive;
+    }
+
+    h2 {
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+      margin: 0 0 var(--spacing-md) 0;
+    }
+
+    h3 {
+      font-size: clamp(1rem, 3.5vw, 1.25rem);
+      margin: 0 0 var(--spacing-sm) 0;
+    }
+
+    /* Phase Indicator */
+    .phase-indicator {
+      font-weight: bold;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: 20px;
+      background-color: var(--color-secondary);
+      color: #333;
+      display: inline-block;
+      margin-top: var(--spacing-sm);
+      font-size: 0.9rem;
+    }
+
+    #countdown-timer {
+      font-size: clamp(0.8rem, 3vw, 1rem);
+      color: #666;
+      margin: var(--spacing-sm) 0;
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--color-card-light);
+      padding: var(--spacing-lg);
+      border-radius: 15px;
+      box-shadow: 0 4px 12px var(--color-shadow);
+      margin-bottom: var(--spacing-md);
+    }
+
+    @media (max-width: 400px) {
+      .card {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+      }
+    }
+
+    /* Form Elements */
+    input[type="text"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      min-height: var(--touch-target);
+      padding: 12px var(--spacing-md);
+      margin-bottom: var(--spacing-sm);
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px; /* Prevents zoom on iOS */
+      background-color: var(--color-background-light);
+      color: var(--color-text-light);
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(136, 176, 75, 0.15);
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    /* Labels */
+    label,
+    .field-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #555;
+    }
+
+    .field-group {
+      margin-bottom: var(--spacing-md);
+    }
+
+    /* Buttons */
+    button {
+      min-height: var(--touch-target);
+      padding: 12px var(--spacing-lg);
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #auth-button,
+    #suggest-button,
+    #save-profile-button {
+      width: 100%;
+      min-height: 50px;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      color: white;
+      font-size: 1.1rem;
+      border-radius: 25px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    #cancel-edit-button {
+      width: 100%;
+      margin-top: 10px;
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    #edit-profile-button {
+      background: #f0f0f0;
+      color: #333;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      border: 1px solid #ddd;
+    }
+
+    /* Counter Boxes */
+    .counter-box {
+      display: flex;
+      justify-content: space-around;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .counter-item {
+      flex: 1;
+      padding: var(--spacing-md);
+      border-radius: 12px;
+      background-color: var(--color-background-light);
+      border: 2px solid var(--color-secondary);
+      text-align: center;
+    }
+
+    .counter-item small {
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .counter-item h3 {
+      margin: 4px 0 0 0;
+      font-size: clamp(1.5rem, 6vw, 2rem);
+      color: var(--color-primary);
+    }
+
+    /* Profile Display */
+    #profile-display-section > div:first-child {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--spacing-sm);
+      background: var(--color-background-light);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: var(--spacing-md);
+    }
+
+    @media (max-width: 400px) {
+      #profile-display-section > div:first-child {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      #edit-profile-button {
+        width: 100%;
+        margin-top: var(--spacing-sm);
+      }
+    }
+
+    /* My Suggestions List */
+    .my-suggestions-card {
+      margin-top: var(--spacing-md);
+      padding-top: var(--spacing-md);
+      border-top: 1px dashed var(--color-secondary);
+    }
+
+    #my-suggestions-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .my-suggestion-item {
+      display: flex;
+      flex-direction: column;
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-sm);
+      border-radius: 12px;
+      background: var(--color-background-light);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    @media (min-width: 450px) {
+      .my-suggestion-item {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .my-suggestion-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .my-suggestion-main .name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      word-break: break-word;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .my-suggestion-actions {
+      display: flex;
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-sm);
+    }
+
+    @media (min-width: 450px) {
+      .my-suggestion-actions {
+        margin-top: 0;
+        margin-left: var(--spacing-sm);
+      }
+    }
+
+    .my-suggestion-actions button {
+      min-height: 38px;
+      min-width: 70px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+    }
+
+    .edit-btn {
+      background: #ffe8a3 !important;
+      color: #333 !important;
+    }
+
+    .delete-btn {
+      background: #ffd1d1 !important;
+      color: #333 !important;
+    }
+
+    /* Voting Section */
+    .name-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .name-item {
+      display: flex;
+      flex-direction: column;
+      padding: var(--spacing-md) 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    @media (min-width: 500px) {
+      .name-item {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .name-info {
+      flex: 1;
+      min-width: 0;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    @media (min-width: 500px) {
+      .name-info {
+        margin-bottom: 0;
+        margin-right: var(--spacing-md);
+      }
+    }
+
+    .name-info h4 {
+      margin: 0 0 4px 0;
+      font-size: 1.1rem;
+      word-break: break-word;
+    }
+
+    .name-info small {
+      color: #888;
+      font-size: 0.85rem;
+    }
+
+    /* Star Rating */
+    .star-rating {
+      display: flex;
+      gap: 2px;
+    }
+
+    @media (min-width: 500px) {
+      .star-rating {
+        justify-content: flex-end;
+      }
+    }
+
+    .star-btn {
+      background: none !important;
+      border: none !important;
+      font-size: 1.8rem;
+      width: var(--touch-target);
+      height: var(--touch-target);
+      padding: 0;
+      color: #ddd;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease, transform 0.1s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .star-btn:active {
+      transform: scale(1.15);
+    }
+
+    .star-btn.active {
+      color: #FFD700;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    }
+
+    /* Quota Meters */
+    .quota-meters {
+      margin-bottom: var(--spacing-md);
+      padding: var(--spacing-md);
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      background-color: var(--color-background-light);
+    }
+
+    .quota-meters h4 {
+      margin: 0 0 var(--spacing-sm) 0;
+      font-size: 1rem;
+    }
+
+    .meter-bar {
+      height: 8px;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    /* Reveal Section */
+    #reveal-section h1 {
+      font-size: clamp(1.3rem, 5vw, 2rem);
+    }
+
+    #actual-gender-display {
+      font-size: clamp(2rem, 10vw, 3.5rem) !important;
+    }
+
+    /* Ranking List */
+    .ranking-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      padding: var(--spacing-md);
+      border-bottom: 1px solid #eee;
+      gap: var(--spacing-sm);
+    }
+
+    .rank {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--color-primary);
+      min-width: 35px;
+      text-align: center;
+    }
+
+    .ranking-item .name-info {
+      margin: 0;
+      flex: 1;
+    }
+
+    .score {
+      font-weight: bold;
+      color: var(--color-secondary);
+      font-size: 1rem;
+    }
+
+    /* Charts */
+    #guess-pie-chart,
+    #top-girls-chart,
+    #top-boys-chart,
+    #relation-chart {
+      width: 100% !important;
+      max-width: 100%;
+      height: 250px !important;
+      margin: 0 auto var(--spacing-md);
+    }
+
+    @media (min-width: 500px) {
+      #guess-pie-chart,
+      #top-girls-chart,
+      #top-boys-chart,
+      #relation-chart {
+        height: 300px !important;
+      }
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: var(--spacing-md);
+    }
+
+    .modal-content {
+      background-color: var(--color-card-light);
+      padding: var(--spacing-lg);
+      border-radius: 15px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #888;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #f0f0f0;
+    }
+
+    .modal-close:active {
+      background: #e0e0e0;
+    }
+
+    /* Swap List */
+    .swap-list {
+      list-style: none;
+      padding: 0;
+      margin: var(--spacing-md) 0;
+      max-height: 200px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid #eee;
+      border-radius: 10px;
+    }
+
+    .swap-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-md);
+      border-bottom: 1px solid #eee;
+      gap: var(--spacing-sm);
+    }
+
+    .swap-item:last-child {
+      border-bottom: none;
+    }
+
+    .swap-item span {
+      flex: 1;
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    .swap-item button {
+      min-width: 90px;
+      background-color: var(--color-secondary);
+      color: #333;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+    }
+
+    /* Loading Spinner */
+    #loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--color-primary);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 25px;
+      display: none;
+      z-index: 3000;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      max-width: calc(100% - 40px);
+      text-align: center;
+    }
+
+    #toast.success { background: #4CAF50; }
+    #toast.error { background: #e74c3c; }
+    #toast.warning { background: #f39c12; }
+
+    #toast.show {
+      display: block;
+      animation: toastIn 0.3s ease;
+    }
+
+    @keyframes toastIn {
+      from { 
+        opacity: 0; 
+        transform: translateX(-50%) translateY(20px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateX(-50%) translateY(0); 
+      }
+    }
+
+    /* Searchable Dropdown */
+    .select-wrapper {
+      position: relative;
+    }
+
+    .dropdown-list {
+      position: absolute;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 2px solid var(--color-primary);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      background-color: var(--color-card-light);
+      z-index: 100;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .dropdown-list-item {
+      padding: 14px var(--spacing-md);
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 1rem;
+      min-height: var(--touch-target);
+      display: flex;
+      align-items: center;
+    }
+
+    .dropdown-list-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-list-item:active {
+      background-color: var(--color-primary);
+      color: white;
+    }
+
+    /* Admin Panel */
+    .admin-panel {
+      border: 2px dashed #888;
+      padding: var(--spacing-md);
+      margin-top: var(--spacing-md);
+    }
+
+    /* Confetti */
+    .confetti-piece {
+      position: absolute;
+      top: -10px;
+      width: 10px;
+      height: 14px;
+      border-radius: 2px;
+      background: #ff9eb5;
+      animation: confettiFall 2.5s ease-out forwards;
+    }
+
+    .confetti-piece:nth-child(3n) { background: #9fd4ff; }
+    .confetti-piece:nth-child(3n+1) { background: #c6f7e2; }
+    .confetti-piece:nth-child(3n+2) { background: #ffe8a3; }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* Profile Setup Box */
+    #profile-setup-section > div {
+      background: linear-gradient(135deg, #fff9fb 0%, #f0f7ff 100%);
+      padding: var(--spacing-lg);
+      border-radius: 15px;
+      border: 2px dashed var(--color-secondary);
+    }
+
+    /* Auth Section */
+    #auth-section h2 {
+      text-align: center;
+      color: var(--color-primary);
+    }
+
+    #auth-message {
+      text-align: center;
+      min-height: 20px;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    /* Horizontal Rule */
+    hr {
+      border: 0;
+      border-top: 1px dashed #ddd;
+      margin: var(--spacing-md) 0;
+    }
+
+    /* Dark Mode – softer neutral theme, no ugly dark blue */
+    /* @media (prefers-color-scheme: dark) {
+      :root {
+        --color-background-light: #181818;
+        --color-text-light: #f5f5f5;
+        --color-card-light: #242424;
+        --color-shadow: rgba(0, 0, 0, 0.5);
+      }
+
+      body {
+        background: linear-gradient(135deg, #262626 0%, #1e1e1e 40%, #2b2428 100%);
+      }
+
+      input[type="text"],
+      input[type="email"],
+      textarea,
+      select {
+        background-color: #242424;
+        border-color: #444;
+        color: #f5f5f5;
+      }
+
+      .card {
+        border: 1px solid #333;
+      }
+
+      hr {
+        border-top: 1px dashed #444;
+      }
+    } *\
+
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Landscape adjustments */
+    @media (max-height: 500px) and (orientation: landscape) {
+      header {
+        padding: var(--spacing-sm) var(--spacing-md);
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .card {
+        padding: var(--spacing-md);
+      }
+      
+      .modal-content {
+        max-height: 95vh;
+      }
+    }
+  
+</style>
+</head>
+<body>
+
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1>Baby Name Reveal Funfair</h1>
+      <p id="countdown-timer">Loading...</p>
+      <div id="phase-display" class="phase-indicator"></div>
+    </header>
+
+    <!-- Authentication Section -->
+    <div id="auth-section" class="card">
+      <h2>Who are you?</h2>
+      <p id="auth-message" style="color: red;"></p>
+      <label for="voter-name">Your Name:</label>
+      <input type="text" id="voter-name" placeholder="e.g., Khala Sarah">
+
+      <button id="auth-button">Enter the Funfair</button>
+    </div>
+
+    <!-- Main Content Sections -->
+    <div id="main-content" style="display: none;">
+
+      <!-- Nominations Phase -->
+      <div id="nominations-section" class="card">
+        <!-- 1. GREETING -->
+        <h2 id="nomination-greeting" style="color:var(--color-primary); text-align:center;">Welcome!</h2>
+
+        <h3 id="total-submitted-title" style="text-align:center; margin-bottom:10px; font-weight:600; color:var(--color-primary);">
+          Total Names Submitted So Far
+        </h3>
+
+        <div class="counter-box">
+          <div class="counter-item">
+            <small><strong>Girl Names</strong></small>
+            <h3 id="girl-count">0</h3>
+          </div>
+          <div class="counter-item">
+            <small><strong>Boy Names</strong></small>
+            <h3 id="boy-count">0</h3>
+          </div>
+        </div>
+
+        <p id="nomination-quota-message" style="font-weight: bold; color: #555; text-align:center;"></p>
+
+        <!-- ============================================ -->
+        <!-- PROFILE SETUP (Asked Once) -->
+        <!-- ============================================ -->
+        <div id="profile-setup-section">
+          <div style="background: linear-gradient(135deg, #fff9fb 0%, #f0f7ff 100%); padding: 20px; border-radius: 15px; border: 2px dashed var(--color-secondary); margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: var(--color-primary); text-align: center;">📝 Quick Setup</h3>
+            <p style="text-align: center; color: #666; font-size: 0.9em;">Tell us a bit about yourself (only asked once!)</p>
+
+            <!-- RELATION -->
+            <div class="field-group">
+              <label for="profile-relation-input" class="field-label">
+                1. What is your relationship to the baby?
+              </label>
+              <div class="select-wrapper">
+                <input type="text" id="profile-relation-input" class="field-input" placeholder="e.g., Khala, Uncle, Friend">
+                <div id="profile-relation-list" class="dropdown-list"></div>
+              </div>
+            </div>
+
+            <!-- GENDER GUESS -->
+            <div class="field-group" style="margin-top: 15px;">
+              <label for="profile-guess" class="field-label">
+                2. What is your guess for the baby's gender?
+              </label>
+              <select id="profile-guess" class="field-input">
+                <option value="" disabled selected>-- Make your guess! --</option>
+                <option value="Girl">👧 Girl</option>
+                <option value="Boy">👦 Boy</option>
+              </select>
+            </div>
+
+            <button id="save-profile-button" style="margin-top: 20px; background: var(--color-primary); color: white; padding: 12px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1em;">
+              ✨ Save & Start Suggesting Names
+            </button>
+            <p id="profile-message" style="margin-top: 10px; text-align: center;"></p>
+          </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PROFILE DISPLAY (After Setup) -->
+        <!-- ============================================ -->
+        <div id="profile-display-section" style="display: none;">
+          <div style="background: var(--color-background-light); padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <span style="font-size: 0.85em; color: #666;">Your Profile:</span><br>
+              <strong id="display-relation" style="color: var(--color-primary);">-</strong>
+              <span style="margin: 0 8px; color: #ccc;">|</span>
+              <span>Guessed: <strong id="display-guess" style="color: var(--color-primary);">-</strong></span>
+            </div>
+            <button id="edit-profile-button" style="background: #f0f0f0; border: 1px solid #ddd; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85em;">
+              ✏️ Edit
+            </button>
+          </div>
+
+          <hr style="border:0; border-top:1px dashed #ccc; margin: 15px 0;">
+
+          <!-- NAME SUGGESTION FORM -->
+          <h3 style="color: var(--color-primary); margin-bottom: 15px;">💡 Suggest a Name</h3>
+
+          <!-- Name field -->
+          <div class="field-group">
+            <label for="suggest-name" class="field-label">
+              Name
+            </label>
+            <input type="text" id="suggest-name" class="field-input" placeholder="e.g. Aurora">
+          </div>
+
+          <!-- Meaning field -->
+          <div class="field-group">
+            <label for="suggest-meaning" class="field-label">
+              Meaning (optional)
+            </label>
+            <textarea id="suggest-meaning" class="field-textarea" rows="2" placeholder="e.g. Dawn, the first light of the day"></textarea>
+          </div>
+
+          <!-- Gender -->
+          <div class="field-group">
+            <label for="suggest-gender" class="field-label">
+              Name is for
+            </label>
+            <select id="suggest-gender" class="field-input">
+              <option value="Girl">👧 Girl</option>
+              <option value="Boy">👦 Boy</option>
+            </select>
+          </div>
+
+          <button id="suggest-button" style="background: var(--color-primary); color: white; padding: 12px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1em;">
+            Submit Nomination
+          </button>
+          <button id="cancel-edit-button" style="display:none; background:#ccc; margin-top:10px; width:100%; padding:10px; border:none; border-radius:5px; cursor:pointer;">
+            Cancel Edit
+          </button>
+          <p id="suggest-message" style="margin-top: 10px;"></p>
+
+          <!-- LIST OF USER'S SUGGESTIONS -->
+          <div id="my-suggestions" class="my-suggestions-card">
+            <h3>Your Suggestions</h3>
+            <ul id="my-suggestions-list"></ul>
+          </div>
+        </div>
+
+        <!-- Hidden fields to store profile values for submission -->
+        <input type="hidden" id="suggest-relation-value">
+        <input type="hidden" id="suggest-guess-value">
+      </div>
+
+      <!-- Voting Phase -->
+      <div id="voting-section" class="card">
+        <h2>Rate the Names</h2>
+        <div class="quota-meters">
+          <h4>Your Star Quota</h4>
+          <div id="quota-display"></div>
+        </div>
+        <ul id="name-voting-list" class="name-list">
+          <!-- Name items will be injected here -->
+        </ul>
+      </div>
+
+      <!-- Reveal Phase -->
+      <div id="reveal-section" class="card" style="text-align: center;">
+        
+        <!-- 1. Header & Reveal -->
+        <h1 style="color:var(--color-primary); margin-bottom: 10px;">The Grand Reveal!</h1>
+        <h2 style="margin-top: 0;">The baby's gender is...</h2>
+        
+        <div style="background: #fdfdfd; border: 2px dashed var(--color-secondary); padding: 20px; border-radius: 15px; margin: 20px 0;">
+          <h1 id="actual-gender-display" style="font-size: 3em; margin: 0; color: #333;">Loading...</h1>
+        </div>
+
+        <!-- 2. Gender Guess Breakdown -->
+        <h3>Gender Guess Breakdown</h3>
+        <div id="guess-pie-chart" style="height: 300px; margin-bottom: 20px;"></div>
+
+        <!-- 3. Correct Guessers & Winners -->
+        <div style="background: var(--color-background-light); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+          <h3>Correct Guessers & Winners</h3>
+          
+          <p>Total Correct Guessers: <strong id="correct-guessers-count" style="font-size: 1.2em;">0</strong></p>
+          
+          <h4>Who Guessed Right:</h4>
+          <p id="correct-guessers-names" style="color: #555; line-height: 1.6;">(List of names)</p>
+
+          <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+          
+          <h4>🏆 Prize Winners 🏆</h4>
+          <p id="winners-list" style="font-weight: bold; color: var(--color-primary); font-size: 1.2em;">Loading...</p>
+        </div>
+
+        <!-- 4. Relation Breakdown -->
+        <h3>Relation Suggestion Breakdown</h3>
+        <div id="relation-chart" style="height: 300px; margin-bottom: 20px;"></div>
+
+        <!-- 5. Final Ranking -->
+        <h3>Final Ranking</h3>
+        <ul id="final-ranking-list" class="ranking-list" style="text-align: left;">
+          <!-- Ranked names injected here -->
+        </ul>
+
+        <!-- 6. Top Charts (At the end) -->
+        <h3>Top Girl Names</h3>
+        <div id="top-girls-chart" style="height: 300px;"></div>
+
+        <h3>Top Boy Names</h3>
+        <div id="top-boys-chart" style="height: 300px;"></div>
+
+      </div>
+
+      <!-- Admin Panel (Hidden by default) -->
+      <div id="admin-panel" class="card admin-panel" style="display: none;">
+        <h2>Admin Controls</h2>
+        <p>Only visible to users with 'Admin' role.</p>
+        <!-- Admin controls will be added here -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast"></div>
+
+  <!-- Swap Modal -->
+  <div id="swap-modal-overlay" class="modal-overlay">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeSwapModal()">&times;</span>
+      <h3>Quota Exceeded!</h3>
+      <p>You have used all your <strong id="swap-star-level">5-star</strong> slots. To give this name a <strong id="swap-target-star">5-star</strong> rating, you must downgrade one of your existing <strong id="swap-star-level">5-star</strong> votes.</p>
+      <p>Select a name to downgrade:</p>
+      <ul id="swap-list" class="swap-list">
+        <!-- Names to swap will be injected here -->
+      </ul>
+      <p id="swap-message" style="color: red;"></p>
+    </div>
+  </div>
+
+  <!-- Alert Modal -->
+  <div id="alert-modal-overlay" class="modal-overlay">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeAlertModal()">&times;</span>
+      <h3 id="alert-title">Alert</h3>
+      <p id="alert-message">Message content.</p>
+      <button onclick="closeAlertModal()" style="margin-top: 15px;">OK</button>
+    </div>
+  </div>
+
+  <script>
+/**
+ * Frontend JavaScript for the Baby Name Reveal Funfair application.
+ * Mobile-optimized version - Clean touch handling
+ */
+
+// Global State
+const STATE = {
+  person: '',
+  token: '',
+  role: 'None',
+  phase: 'Loading',
+  deadlines: {},
+  config: {},
+  names: [],
+  voterState: { votes: {} },
+  quota: { budgets: {}, usage: {} },
+  reveal: {
+    actualGender: 'Unknown',
+    rankedNames: [],
+    chartData: {},
+    winners: [],
+  }
+};
+
+// --- UTILITY FUNCTIONS ---
+
+function $(selector) {
+  return document.querySelector(selector);
+}
+
+function showLoading() {
+  $('#loading-overlay').style.display = 'flex';
+}
+
+function hideLoading() {
+  $('#loading-overlay').style.display = 'none';
+}
+
+function showToast(message, type = '', duration = 3000) {
+  const toast = $('#toast');
+  if (!toast) return;
+  
+  if (toast.hideTimeout) {
+    clearTimeout(toast.hideTimeout);
+  }
+  
+  toast.textContent = message;
+  toast.className = type ? `show ${type}` : 'show';
+  
+  toast.hideTimeout = setTimeout(() => {
+    toast.className = '';
+  }, duration);
+}
+
+function showAlert(title, message) {
+  $('#alert-title').textContent = title;
+  $('#alert-message').innerHTML = message;
+  $('#alert-modal-overlay').style.display = 'flex';
+}
+
+function closeAlertModal() {
+  $('#alert-modal-overlay').style.display = 'none';
+}
+
+function postJSON(data) {
+  const payload = {
+    ...data,
+    person: STATE.person,
+    token: STATE.token,
+  };
+
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler(resolve)
+      .withFailureHandler(reject)
+      .handleFrontendRequest(payload);
+  });
+}
+
+// --- AUTHENTICATION ---
+
+async function authenticate() {
+  STATE.person = $('#voter-name').value.trim();
+  STATE.token = 'family-access';
+
+  if (!STATE.person) {
+    $('#auth-message').textContent = 'Please enter your name.';
+    return;
+  }
+
+  showLoading();
+  try {
+    const status = await postJSON({ mode: 'status' });
+    hideLoading();
+
+    if (status.success) {
+      STATE.role = status.access.role;
+      STATE.phase = status.phase;
+      STATE.deadlines = status.deadlines;
+      STATE.config = status.config;
+      STATE.counters = status.counters || {};
+
+      showToast(`👋 Welcome, ${STATE.person}!`, 'success');
+
+      $('#auth-section').style.display = 'none';
+      $('#main-content').style.display = 'block';
+
+      if (STATE.role === 'Admin') {
+        $('#admin-panel').style.display = 'block';
+      }
+
+      updateUI();
+      startCountdown();
+    } else {
+      $('#auth-message').textContent = status.error || 'Login failed.';
+    }
+  } catch (error) {
+    hideLoading();
+    console.error('Authentication error:', error);
+    $('#auth-message').textContent = 'Unexpected error during authentication.';
+  }
+}
+
+function startCountdown() {
+  const deadlineKey = {
+    'Nominations': 'nominations',
+    'Voting': 'voting',
+    'Reveal': 'reveal',
+  }[STATE.phase];
+
+  if (!deadlineKey || !STATE.deadlines[deadlineKey]) {
+    $('#countdown-timer').textContent = 'Phase is currently active.';
+    return;
+  }
+
+  const deadline = new Date(STATE.deadlines[deadlineKey]).getTime();
+
+  const updateTimer = () => {
+    const now = new Date().getTime();
+    const distance = deadline - now;
+
+    if (distance < 0) {
+      $('#countdown-timer').textContent = `${STATE.phase} phase has ended.`;
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    $('#countdown-timer').textContent = `Time remaining for ${STATE.phase}: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+  };
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
+}
+
+// --- UI RENDERING ---
+
+function updateUI() {
+  $('#phase-display').textContent = STATE.phase;
+
+  $('#nominations-section').style.display = 'none';
+  $('#voting-section').style.display = 'none';
+  $('#reveal-section').style.display = 'none';
+
+  switch (STATE.phase) {
+    case 'Nominations':
+      $('#nominations-section').style.display = 'block';
+      renderNominations();
+      break;
+    case 'Voting':
+      $('#voting-section').style.display = 'block';
+      renderVoting();
+      break;
+    case 'Reveal':
+      $('#reveal-section').style.display = 'block';
+      renderReveal();
+      break;
+    default:
+      showAlert('Funfair Status', `The Funfair is currently in the "${STATE.phase}" phase.`);
+  }
+}
+
+// --- PROFILE MANAGEMENT ---
+
+async function loadUserProfile() {
+  const savedProfile = localStorage.getItem(`funfair_profile_${STATE.person.toLowerCase()}`);
+  if (savedProfile) {
+    try {
+      return JSON.parse(savedProfile);
+    } catch (e) {
+      console.warn('Could not parse saved profile:', e);
+    }
+  }
+
+  try {
+    const res = await postJSON({ mode: 'my_suggestions' });
+    if (res.success && res.items && res.items.length > 0) {
+      const firstSuggestion = res.items[0];
+      const profile = {
+        relation: firstSuggestion.relation || '',
+        guess: firstSuggestion.guess || ''
+      };
+      
+      if (profile.relation && profile.guess) {
+        saveUserProfile(profile);
+        return profile;
+      }
+    }
+  } catch (e) {
+    console.warn('Could not load profile from backend:', e);
+  }
+
+  return null;
+}
+
+function saveUserProfile(profile) {
+  localStorage.setItem(
+    `funfair_profile_${STATE.person.toLowerCase()}`,
+    JSON.stringify(profile)
+  );
+}
+
+function showProfileSetup() {
+  $('#profile-setup-section').style.display = 'block';
+  $('#profile-display-section').style.display = 'none';
+}
+
+function showProfileDisplay(profile) {
+  $('#profile-setup-section').style.display = 'none';
+  $('#profile-display-section').style.display = 'block';
+  
+  $('#display-relation').textContent = profile.relation;
+  $('#display-guess').textContent = profile.guess;
+  
+  $('#suggest-relation-value').value = profile.relation;
+  $('#suggest-guess-value').value = profile.guess;
+  
+  handleThemeChange(profile.guess);
+}
+
+function handleThemeChange(gender) {
+  if (gender === 'Boy') {
+    document.body.className = 'theme-boy';
+    localStorage.setItem('funfairTheme', 'theme-boy');
+  } else if (gender === 'Girl') {
+    document.body.className = 'theme-girl';
+    localStorage.setItem('funfairTheme', 'theme-girl');
+  } else {
+    document.body.className = '';
+    localStorage.removeItem('funfairTheme');
+  }
+}
+
+async function saveProfileFromForm() {
+  const relation = $('#profile-relation-input').value.trim();
+  const guess = $('#profile-guess').value;
+  
+  if (!relation) {
+    $('#profile-message').textContent = 'Please enter your relationship to the baby.';
+    $('#profile-message').style.color = 'red';
+    return;
+  }
+  
+  if (!guess) {
+    $('#profile-message').textContent = 'Please make your gender guess!';
+    $('#profile-message').style.color = 'red';
+    return;
+  }
+  
+  const profile = { relation, guess };
+  saveUserProfile(profile);
+  showToast(`Profile saved! You guessed ${guess} 🎉`, 'success');
+  showProfileDisplay(profile);
+  await loadMySuggestions();
+}
+
+function editProfile() {
+  const confirmed = confirm(
+    '⚠️ Are you sure you want to change your profile?\n\n' +
+    'Note: Your gender guess is recorded for the lucky draw. ' +
+    'Changing it now will NOT affect your previous suggestions, ' +
+    'but will apply to any new suggestions you make.'
+  );
+  
+  if (!confirmed) return;
+  
+  const currentRelation = $('#suggest-relation-value').value;
+  const currentGuess = $('#suggest-guess-value').value;
+  
+  $('#profile-relation-input').value = currentRelation;
+  $('#profile-guess').value = currentGuess;
+  
+  showProfileSetup();
+}
+
+// --- NOMINATIONS ---
+
+let EDITING_SUGGESTION_ID = null;
+
+async function renderNominations() {
+  const greetingEl = $('#nomination-greeting');
+  if (greetingEl) {
+    greetingEl.textContent = `Welcome, ${STATE.person}!`;
+  }
+
+  $('#girl-count').textContent = (STATE.counters && STATE.counters.girl) || 0;
+  $('#boy-count').textContent = (STATE.counters && STATE.counters.boy) || 0;
+
+  // Set up button handlers
+  const suggestBtn = $('#suggest-button');
+  const saveProfileBtn = $('#save-profile-button');
+  const editProfileBtn = $('#edit-profile-button');
+  
+  if (suggestBtn) suggestBtn.onclick = submitSuggestion;
+  if (saveProfileBtn) saveProfileBtn.onclick = saveProfileFromForm;
+  if (editProfileBtn) editProfileBtn.onclick = editProfile;
+
+  // Initialize the profile relation dropdown
+  initSearchableDropdown('profile-relation');
+
+  // Check if user has a saved profile
+  showLoading();
+  const profile = await loadUserProfile();
+  hideLoading();
+
+  if (profile && profile.relation && profile.guess) {
+    showProfileDisplay(profile);
+    await loadMySuggestions();
+  } else {
+    showProfileSetup();
+  }
+}
+
+function cancelEdit() {
+  EDITING_SUGGESTION_ID = null;
+
+  $('#suggest-name').value = '';
+  $('#suggest-meaning').value = '';
+  $('#suggest-gender').value = 'Girl';
+  $('#suggest-button').textContent = 'Submit Nomination';
+
+  const cancelBtn = $('#cancel-edit-button');
+  if (cancelBtn) {
+    cancelBtn.style.display = 'none';
+  }
+
+  const msg = $('#suggest-message');
+  if (msg) {
+    msg.textContent = '';
+    msg.style.color = '';
+  }
+}
+
+// --- MY SUGGESTIONS & QUOTA DISPLAY ---
+
+function updateNominationQuotaMessage(items) {
+  const msgEl = $('#nomination-quota-message');
+  if (!msgEl) return;
+
+  const maxPerGender =
+    (STATE.config && typeof STATE.config.maxSuggestions === 'number')
+      ? STATE.config.maxSuggestions
+      : 0;
+
+  if (!maxPerGender || !Array.isArray(items)) {
+    msgEl.textContent = '';
+    return;
+  }
+
+  let girls = 0;
+  let boys = 0;
+
+  items.forEach(item => {
+    const g = (item.gender || '').toLowerCase();
+    if (g === 'girl') girls++;
+    if (g === 'boy') boys++;
+  });
+
+  const remainingGirls = Math.max(0, maxPerGender - girls);
+  const remainingBoys = Math.max(0, maxPerGender - boys);
+
+  msgEl.textContent =
+    `Your remaining quota – Girls: ${remainingGirls}/${maxPerGender}, ` +
+    `Boys: ${remainingBoys}/${maxPerGender}`;
+}
+
+
+async function loadMySuggestions() {
+  const list = $('#my-suggestions-list');
+  if (!list) return;
+
+  // Temporary loading message
+  list.innerHTML = '<li style="padding:10px; color:#666;">Loading your suggestions...</li>';
+
+  try {
+    const res = await postJSON({ mode: 'my_suggestions' });
+
+    if (!res.success) {
+      list.innerHTML = `<li style="color:red; padding:10px;">${res.error || 'Could not load your suggestions.'}</li>`;
+      updateNominationQuotaMessage([]);
+      return;
+    }
+
+    const items = res.items || [];
+
+    // Update personal remaining quota (girls/boys)
+    updateNominationQuotaMessage(items);
+
+    if (items.length === 0) {
+      list.innerHTML = '<li style="padding:10px; color:#666;">No suggestions yet. Add your first name above!</li>';
+      return;
+    }
+
+    list.innerHTML = '';
+
+    items.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'my-suggestion-item';
+      li.dataset.id = item.id;
+
+      const pillColor =
+        (item.gender || '').toLowerCase() === 'girl' ? '#E8ADAA' : '#5B92E5';
+
+      const meaningHtml = item.meaning
+        ? `<div style="font-size:0.85em; color:#666; margin-top:2px;">Meaning: ${item.meaning}</div>`
+        : '';
+
+      li.innerHTML = `
+        <div class="my-suggestion-main">
+          <div>
+            <span class="name" style="font-weight:bold; margin-right:10px;">${item.name}</span>
+            <span class="pill" style="background-color:${pillColor}; color:white; padding:2px 8px; border-radius:10px; font-size:0.8em;">${item.gender}</span>
+            ${meaningHtml}
+          </div>
+        </div>
+        <div class="my-suggestion-actions">
+          <button type="button" class="edit-btn">Edit</button>
+          <button type="button" class="delete-btn">Delete</button>
+        </div>
+      `;
+
+      li.querySelector('.edit-btn').onclick = () => startEditSuggestion(item);
+      li.querySelector('.delete-btn').onclick = () => deleteSuggestion(item);
+
+      list.appendChild(li);
+    });
+
+  } catch (error) {
+    console.error(error);
+    list.innerHTML = `<li style="color:red; padding:10px;">Client Error: ${error.message}</li>`;
+    updateNominationQuotaMessage([]);
+  }
+}
+
+
+
+function startEditSuggestion(item) {
+  EDITING_SUGGESTION_ID = item.id;
+  $('#suggest-name').value = item.name;
+  $('#suggest-gender').value = item.gender;
+  $('#suggest-meaning').value = item.meaning || '';
+  $('#suggest-message').textContent = 'Editing existing name. Change it and press "Save Changes".';
+  $('#suggest-message').style.color = '#e67e22';
+  $('#suggest-button').textContent = 'Save Changes';
+  
+  $('#cancel-edit-button').style.display = 'block';
+  $('#cancel-edit-button').onclick = cancelEdit;
+  
+  // Smooth scroll to form
+  const nameInput = $('#suggest-name');
+  if (nameInput) {
+    nameInput.focus();
+  }
+}
+
+async function deleteSuggestion(item) {
+  if (!confirm(`Remove "${item.name}" (${item.gender}) from your list?`)) return;
+
+  showLoading();
+  const res = await postJSON({ mode: 'delete_suggestion', id: item.id });
+  hideLoading();
+
+  if (!res.success) {
+    showToast(res.error || 'Could not delete this name.', 'error');
+    return;
+  }
+
+  $('#suggest-message').textContent = `Removed "${item.name}".`;
+  $('#suggest-message').style.color = 'orange';
+  showToast(`🗑️ "${item.name}" removed`, 'warning');
+  
+  EDITING_SUGGESTION_ID = null;
+  $('#suggest-button').textContent = 'Submit Nomination';
+  $('#cancel-edit-button').style.display = 'none';
+  $('#suggest-name').value = '';
+  $('#suggest-meaning').value = '';
+  await refreshStatus();
+  await loadMySuggestions();
+}
+
+function triggerConfetti() {
+  const isMobile = window.innerWidth < 600;
+  const particleCount = isMobile ? 20 : 35;
+  
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:999;';
+
+  for (let i = 0; i < particleCount; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.animationDelay = (Math.random() * 1) + 's';
+    container.appendChild(piece);
+  }
+
+  document.body.appendChild(container);
+  setTimeout(() => container.remove(), 3000);
+}
+
+async function submitSuggestion() {
+  const name = $('#suggest-name').value.trim();
+  const meaning = $('#suggest-meaning').value.trim();
+  const gender = $('#suggest-gender').value;
+  const relation = $('#suggest-relation-value').value;
+  const guess = $('#suggest-guess-value').value;
+
+  if (!name) {
+    $('#suggest-message').textContent = 'Please enter a name.';
+    $('#suggest-message').style.color = 'red';
+    return;
+  }
+
+  if (!guess || !relation) {
+    $('#suggest-message').textContent = 'Profile not set. Please refresh and set up your profile.';
+    $('#suggest-message').style.color = 'red';
+    return;
+  }
+
+  showLoading();
+
+  const payload = {
+    mode: EDITING_SUGGESTION_ID ? 'update_suggestion' : 'suggest',
+    name,
+    gender,
+    meaning,
+    guess,
+    relation
+  };
+
+  if (EDITING_SUGGESTION_ID) {
+    payload.id = EDITING_SUGGESTION_ID;
+  }
+
+  const res = await postJSON(payload);
+  hideLoading();
+
+  if (res.success) {
+    $('#suggest-message').textContent = EDITING_SUGGESTION_ID
+      ? `Updated "${name}".`
+      : `Success! "${name}" suggested.`;
+    $('#suggest-message').style.color = 'green';
+    
+    showToast(
+      EDITING_SUGGESTION_ID ? `✏️ "${name}" updated!` : `🎉 "${name}" added!`, 
+      'success'
+    );
+    
+    $('#suggest-name').value = '';
+    $('#suggest-meaning').value = '';
+    
+    EDITING_SUGGESTION_ID = null;
+    $('#suggest-button').textContent = 'Submit Nomination';
+    $('#cancel-edit-button').style.display = 'none';
+    
+    triggerConfetti();
+    await refreshStatus();
+    await loadMySuggestions();
+  } else {
+    $('#suggest-message').textContent = `Error: ${res.error}`;
+    $('#suggest-message').style.color = 'red';
+    showToast(res.error || 'Could not save suggestion', 'error');
+  }
+}
+
+// --- VOTING LOGIC ---
+
+async function renderVoting() {
+  showLoading();
+  try {
+    const [namesRes, voterStateRes, quotaRes] = await Promise.all([
+      postJSON({ mode: 'names' }),
+      postJSON({ mode: 'voterstate' }),
+      postJSON({ mode: 'quota' }),
+    ]);
+    hideLoading();
+
+    if (!namesRes.success || !voterStateRes.success || !quotaRes.success) {
+      showAlert('Error', 'Could not load voting data. Please try again.');
+      return;
+    }
+
+    STATE.names = namesRes.names;
+    STATE.voterState.votes = voterStateRes.votes;
+    STATE.quota = quotaRes;
+
+    renderQuotaMeters();
+    renderNameList();
+  } catch (error) {
+    hideLoading();
+    console.error('Voting render error:', error);
+    showAlert('Error', 'Failed to load voting data.');
+  }
+}
+
+function renderQuotaMeters() {
+  const { budgets, usage } = STATE.quota;
+  const quotaDisplay = $('#quota-display');
+  if (!quotaDisplay) return;
+  
+  quotaDisplay.innerHTML = '';
+
+  for (let star = 5; star >= 1; star--) {
+    const budget = budgets[star] || 0;
+    const used = usage[star] || 0;
+    const percent = budget > 0 ? Math.min((used / budget) * 100, 100) : 0;
+
+    const meterHTML = `
+      <p style="margin: 5px 0; font-size: 0.9em;">
+        <strong>${star}-Star:</strong> ${used}/${budget}
+      </p>
+      <div class="meter-bar">
+        <div class="meter-fill" style="width: ${percent}%;"></div>
+      </div>
+    `;
+    quotaDisplay.innerHTML += meterHTML;
+  }
+}
+
+function renderNameList() {
+  const list = $('#name-voting-list');
+  if (!list) return;
+  
+  list.innerHTML = '';
+
+  STATE.names.forEach(nameObj => {
+    const key = nameObj.name + '|' + nameObj.gender;
+    const currentScore = STATE.voterState.votes[key] || 0;
+
+    const item = document.createElement('li');
+    item.className = 'name-item';
+    item.dataset.name = nameObj.name;
+    item.dataset.gender = nameObj.gender;
+
+    let starButtons = '';
+    for (let i = 1; i <= 5; i++) {
+      const isActive = i <= currentScore ? 'active' : '';
+      starButtons += `<button type="button" class="star-btn ${isActive}" data-score="${i}" data-name="${nameObj.name}" data-gender="${nameObj.gender}">★</button>`;
+    }
+
+    const meaningStr = nameObj.meanings && nameObj.meanings.length > 0 
+      ? nameObj.meanings.join(' / ') 
+      : '';
+
+    // 🔒 Anonymous during voting: NO "Suggested by" line here
+    item.innerHTML = `
+      <div class="name-info">
+        <h4>${nameObj.name} <small>(${nameObj.gender})</small></h4>
+        ${meaningStr 
+          ? `<div style="font-style:italic; color:#555; font-size:0.9em;">"${meaningStr}"</div>` 
+          : ''}
+      </div>
+      <div class="star-rating">
+        ${starButtons}
+      </div>
+    `;
+
+    item.querySelectorAll('.star-btn').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleVoteClick(this);
+      });
+    });
+
+    list.appendChild(item);
+  });
+}
+
+
+async function handleVoteClick(button) {
+  const newScore = parseInt(button.dataset.score);
+  const name = button.dataset.name;
+  const gender = button.dataset.gender;
+  const key = name + '|' + gender;
+  const currentScore = STATE.voterState.votes[key] || 0;
+
+  const targetScore = newScore === currentScore ? 0 : newScore;
+
+  const originalScore = currentScore;
+  const originalUsage = { ...STATE.quota.usage };
+
+  updateLocalVote(key, targetScore, name, gender);
+
+  showLoading();
+  try {
+    const res = await postJSON({
+      mode: 'vote',
+      name,
+      gender,
+      score: targetScore
+    });
+    hideLoading();
+
+    if (res.success) {
+      showToast('⭐ Vote saved!', 'success', 1500);
+      await refreshQuota();
+    } else {
+      // Revert on failure
+      STATE.voterState.votes[key] = originalScore;
+      STATE.quota.usage = originalUsage;
+      updateStarButtons(name, gender, originalScore);
+      renderQuotaMeters();
+
+      if (res.budgetExceeded) {
+        openSwapModal(targetScore, name, gender);
+      } else {
+        showToast(res.error || 'Could not save vote', 'error');
+      }
+    }
+  } catch (error) {
+    hideLoading();
+    // Revert on error
+    STATE.voterState.votes[key] = originalScore;
+    STATE.quota.usage = originalUsage;
+    updateStarButtons(name, gender, originalScore);
+    renderQuotaMeters();
+    showToast('Network error. Please try again.', 'error');
+  }
+}
+
+function updateLocalVote(key, newScore, name, gender) {
+  const oldScore = STATE.voterState.votes[key] || 0;
+
+  if (oldScore > 0 && STATE.quota.usage[oldScore]) {
+    STATE.quota.usage[oldScore] = Math.max(0, STATE.quota.usage[oldScore] - 1);
+  }
+  if (newScore > 0) {
+    STATE.quota.usage[newScore] = (STATE.quota.usage[newScore] || 0) + 1;
+  }
+
+  if (newScore === 0) {
+    delete STATE.voterState.votes[key];
+  } else {
+    STATE.voterState.votes[key] = newScore;
+  }
+
+  updateStarButtons(name, gender, newScore);
+  renderQuotaMeters();
+}
+
+function updateStarButtons(name, gender, score) {
+  const item = document.querySelector(`#name-voting-list li[data-name="${name}"][data-gender="${gender}"]`);
+  if (!item) return;
+
+  item.querySelectorAll('.star-btn').forEach(button => {
+    const btnScore = parseInt(button.dataset.score);
+    if (btnScore <= score) {
+      button.classList.add('active');
+    } else {
+      button.classList.remove('active');
+    }
+  });
+}
+
+async function refreshQuota() {
+  try {
+    const quotaRes = await postJSON({ mode: 'quota' });
+    if (quotaRes.success) {
+      STATE.quota = quotaRes;
+      renderQuotaMeters();
+    }
+  } catch (error) {
+    console.error('Failed to refresh quota:', error);
+  }
+}
+
+// --- SWAP MODAL ---
+
+let swapTarget = { name: '', gender: '', score: 0 };
+
+function openSwapModal(targetScore, name, gender) {
+  swapTarget = { name, gender, score: targetScore };
+
+  const starLevelEl = $('#swap-star-level');
+  const targetStarEl = $('#swap-target-star');
+  const swapMessageEl = $('#swap-message');
+  
+  if (starLevelEl) starLevelEl.textContent = `${targetScore}-star`;
+  if (targetStarEl) targetStarEl.textContent = `${targetScore}-star`;
+  if (swapMessageEl) swapMessageEl.textContent = '';
+
+  const swapList = $('#swap-list');
+  if (!swapList) return;
+  
+  swapList.innerHTML = '';
+
+  const namesToSwap = Object.entries(STATE.voterState.votes)
+    .filter(([key, score]) => score === targetScore)
+    .map(([key, score]) => {
+      const [n, g] = key.split('|');
+      return { name: n, gender: g, score };
+    });
+
+  if (namesToSwap.length === 0) {
+    closeSwapModal();
+    showToast('No existing votes found to swap.', 'error');
+    return;
+  }
+
+  namesToSwap.forEach(item => {
+    const listItem = document.createElement('li');
+    listItem.className = 'swap-item';
+    
+    const span = document.createElement('span');
+    span.textContent = `${item.name} (${item.gender})`;
+    
+    const btn = document.createElement('button');
+    btn.textContent = 'Downgrade';
+    btn.addEventListener('click', () => handleSwap(item.name, item.gender, item.score));
+    
+    listItem.appendChild(span);
+    listItem.appendChild(btn);
+    swapList.appendChild(listItem);
+  });
+
+  $('#swap-modal-overlay').style.display = 'flex';
+}
+
+async function handleSwap(oldName, oldGender, oldScore) {
+  const { name: newName, gender: newGender, score: newScore } = swapTarget;
+
+  const oldKey = oldName + '|' + oldGender;
+  updateLocalVote(oldKey, 0, oldName, oldGender);
+
+  const newKey = newName + '|' + newGender;
+  updateLocalVote(newKey, newScore, newName, newGender);
+
+  showLoading();
+  try {
+    const res = await postJSON({
+      mode: 'vote',
+      name:  newName,
+      gender: newGender,
+      score: newScore
+    });
+    hideLoading();
+
+    if (res.success) {
+      closeSwapModal();
+      showAlert('Vote Applied', `Your vote for "${newName}" has been recorded. You still have a ${oldScore}-star vote on "${oldName}". You can downgrade it manually if you wish to free up that slot.`);
+      renderNameList();
+    } else {
+      // Revert both changes
+      updateLocalVote(oldKey, oldScore, oldName, oldGender);
+      updateLocalVote(newKey, 0, newName, newGender);
+      showToast(`Swap failed: ${res.error}`, 'error', 4000);
+    }
+  } catch (error) {
+    hideLoading();
+    updateLocalVote(oldKey, oldScore, oldName, oldGender);
+    updateLocalVote(newKey, 0, newName, newGender);
+    showToast('Network error during swap. Please try again.', 'error');
+  }
+}
+
+function closeSwapModal() {
+  $('#swap-modal-overlay').style.display = 'none';
+}
+
+// --- REVEAL LOGIC ---
+
+async function renderReveal() {
+  showLoading();
+  try {
+    const res = await postJSON({ mode: 'reveal' });
+    hideLoading();
+
+    if (!res.success) {
+      showAlert('Error', 'Could not load reveal data.');
+      return;
+    }
+
+    STATE.reveal = res;
+
+    const genderText = res.actualGender || 'Not yet revealed!';
+    const genderEl = $('#actual-gender-display');
+    if (genderEl) {
+      genderEl.textContent = genderText;
+      
+      if (genderText.toLowerCase() === 'boy') {
+        genderEl.style.color = '#5B92E5';
+      } else if (genderText.toLowerCase() === 'girl') {
+        genderEl.style.color = '#E8ADAA';
+      }
+    }
+
+    const guessersList = res.chartData.correctGuessersList || [];
+    const correctCountEl = $('#correct-guessers-count');
+    const correctNamesEl = $('#correct-guessers-names');
+    const winnersListEl = $('#winners-list');
+    
+    if (correctCountEl) correctCountEl.textContent = guessersList.length;
+    if (correctNamesEl) {
+      correctNamesEl.textContent = guessersList.length > 0 
+        ? guessersList.join(', ') 
+        : 'No one guessed correctly!';
+    }
+    if (winnersListEl) {
+      winnersListEl.textContent = res.winners.length > 0 
+        ? res.winners.join(', ') 
+        : 'No winners drawn yet.';
+    }
+
+    renderRankingList(res.rankedNames);
+    drawCharts(res.chartData);
+  } catch (error) {
+    hideLoading();
+    console.error('Reveal render error:', error);
+    showAlert('Error', 'Failed to load reveal data.');
+  }
+}
+
+function renderRankingList(rankedNames) {
+  const list = $('#final-ranking-list');
+  if (!list) return;
+  
+  list.innerHTML = '';
+
+  const topGirl = rankedNames.find(n => n.gender.toLowerCase() === 'girl');
+  const topBoy = rankedNames.find(n => n.gender.toLowerCase() === 'boy');
+
+  const topGirlName = topGirl ? topGirl.name : null;
+  const topBoyName = topBoy ? topBoy.name : null;
+
+  const revealOrder = rankedNames.slice(0, 10).reverse();
+
+  revealOrder.forEach((nameObj, index) => {
+    const rank = revealOrder.length - index;
+    const item = document.createElement('li');
+    item.className = 'ranking-item';
+
+    let isWinner = false;
+
+    if (nameObj.name === topGirlName) {
+      item.style.backgroundColor = '#fff0f3';
+      item.style.border = '3px solid #E8ADAA';
+      isWinner = true;
+    } 
+    else if (nameObj.name === topBoyName) {
+      item.style.backgroundColor = '#f0f7ff';
+      item.style.border = '3px solid #5B92E5';
+      isWinner = true;
+    }
+
+    if (isWinner) {
+      item.style.borderRadius = '12px';
+      item.style.padding = '15px';
+      item.style.marginTop = '15px';
+      item.style.marginBottom = '15px';
+      item.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    }
+
+    item.innerHTML = `
+      <span class="rank" style="min-width: 30px; font-size: 1.2em;">${rank}.</span>
+      <div class="name-info">
+        <h4 style="margin:0; font-size: 1.1em;">
+          ${nameObj.name} 
+          <span style="font-size:0.8em; font-weight:normal; color:#666;">(${nameObj.gender})</span>
+          ${isWinner ? ' 👑' : ''}
+        </h4>
+        <small style="color:#777;">Suggested by: ${nameObj.suggesters.join(', ')}</small>
+      </div>
+      <span class="score" style="font-size: 1.1em;">${nameObj.bayesianScore.toFixed(3)}</span>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function drawCharts(chartData) {
+  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const chartOptions = {
+    backgroundColor: isDarkMode ? '#1e1e1e' : 'white',
+    titleTextStyle: { color: isDarkMode ? '#e0e0e0' : '#333' },
+    legend: { textStyle: { color: isDarkMode ? '#e0e0e0' : '#333' } },
+    hAxis: { textStyle: { color: isDarkMode ? '#e0e0e0' : '#333' } },
+    vAxis: { textStyle: { color: isDarkMode ? '#e0e0e0' : '#333' } },
+    colors: ['#ff6f61', '#ffc72c', '#4CAF50', '#2196F3', '#9C27B0'],
+    chartArea: { width: '80%', height: '70%' },
+  };
+
+  try {
+    // Gender Guess Pie Chart
+    if (chartData.guessPie && $('#guess-pie-chart')) {
+      const pieData = google.visualization.arrayToDataTable(chartData.guessPie);
+      const pieChart = new google.visualization.PieChart($('#guess-pie-chart'));
+      pieChart.draw(pieData, { ...chartOptions, title: 'Gender Guess Breakdown' });
+    }
+
+    // Top Girl Names Bar Chart
+    if (chartData.topNames && chartData.topNames.girls && $('#top-girls-chart')) {
+      const girlData = google.visualization.arrayToDataTable(chartData.topNames.girls);
+      const girlChart = new google.visualization.BarChart($('#top-girls-chart'));
+      girlChart.draw(girlData, { ...chartOptions, title: 'Top Girl Names', legend: { position: 'none' } });
+    }
+
+    // Top Boy Names Bar Chart
+    if (chartData.topNames && chartData.topNames.boys && $('#top-boys-chart')) {
+      const boyData = google.visualization.arrayToDataTable(chartData.topNames.boys);
+      const boyChart = new google.visualization.BarChart($('#top-boys-chart'));
+      boyChart.draw(boyData, { ...chartOptions, title: 'Top Boy Names', legend: { position: 'none' } });
+    }
+
+    // Relation Breakdown Pie Chart
+    if (chartData.relationBreakdown && $('#relation-chart')) {
+      const relationData = google.visualization.arrayToDataTable(chartData.relationBreakdown);
+      const relationChart = new google.visualization.PieChart($('#relation-chart'));
+      relationChart.draw(relationData, { ...chartOptions, title: 'Suggestions by Relation' });
+    }
+  } catch (error) {
+    console.error('Chart drawing error:', error);
+  }
+}
+
+// --- SEARCHABLE DROPDOWN ---
+
+function initSearchableDropdown(idPrefix) {
+  const input = $(`#${idPrefix}-input`);
+  const list = $(`#${idPrefix}-list`);
+
+  if (!input || !list) {
+    console.warn(`Dropdown elements not found for prefix: ${idPrefix}`);
+    return;
+  }
+
+  const relations = [
+    'Khala', 'Mamu', 'Dadi', 'Dada', 'Nani', 'Nana', 'Bua', 'Phupha', 'Chacha', 'Chachi',
+    'Masi', 'Masa', 'Aunt', 'Uncle', 'Cousin', 'Friend', 'Parent', 'Grandparent', 'Sibling', 'Other'
+  ];
+
+  // Clear existing items
+  list.innerHTML = '';
+
+  relations.forEach(relation => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-list-item';
+    item.textContent = relation;
+    
+    // Use mousedown for desktop, touchstart for mobile
+    item.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      input.value = relation;
+      list.style.display = 'none';
+    });
+    
+    item.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      input.value = relation;
+      list.style.display = 'none';
+    });
+    
+    list.appendChild(item);
+  });
+
+  input.addEventListener('focus', () => {
+    list.style.display = 'block';
+  });
+  
+  input.addEventListener('blur', () => {
+    // Delay to allow click/touch to register
+    setTimeout(() => {
+      list.style.display = 'none';
+    }, 250);
+  });
+
+  input.addEventListener('input', () => {
+    const filter = input.value.toLowerCase();
+    list.querySelectorAll('.dropdown-list-item').forEach(item => {
+      const text = item.textContent.toLowerCase();
+      item.style.display = text.includes(filter) ? 'block' : 'none';
+    });
+    list.style.display = 'block';
+  });
+}
+
+// --- GLOBAL REFRESH ---
+
+async function refreshStatus() {
+  showLoading();
+  try {
+    const status = await postJSON({ mode: 'status' });
+    hideLoading();
+
+    if (status.success) {
+      STATE.phase = status.phase;
+      STATE.deadlines = status.deadlines;
+      STATE.config = status.config;
+      STATE.counters = status.counters || {};
+      updateUI();
+    } else {
+      console.error('Failed to refresh status:', status.error);
+    }
+  } catch (error) {
+    hideLoading();
+    console.error('Failed to refresh status:', error);
+  }
+}
+
+// --- INITIALIZATION ---
+
+function initApp() {
+  // Auth button
+  const authButton = $('#auth-button');
+  if (authButton) {
+    authButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      authenticate();
+    });
+  }
+  
+  // Enter key on name input
+  const voterNameInput = $('#voter-name');
+  if (voterNameInput) {
+    voterNameInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        authenticate();
+      }
+    });
+  }
+
+  // Apply saved theme
+  const savedTheme = localStorage.getItem('funfairTheme');
+  if (savedTheme) {
+    document.body.className = savedTheme;
+  }
+
+  hideLoading();
+
+  // Load Google Charts
+  google.charts.load('current', { 'packages': ['corechart', 'bar'] });
+  google.charts.setOnLoadCallback(() => {
+    console.log('Google Charts loaded');
+  });
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initApp);
+
+// Expose functions globally for HTML onclick handlers
+window.closeAlertModal = closeAlertModal;
+window.closeSwapModal = closeSwapModal;
+window.handleSwap = handleSwap;
+   
+  </script>
+</body>
+</html>
