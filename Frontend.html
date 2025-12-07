@@ -1224,18 +1224,12 @@ function updateCounterValue(id, value) {
 }
 
 function renderUniqueCounterMessage() {
-  const counters = STATE.counters || {};
   const messageEl = $('#unique-counter-message');
   if (!messageEl) return;
 
-  const totalSubmitted = counters.total || 0;
-  const girlCount = counters.girl || 0;
-  const boyCount = counters.boy || 0;
-  const totalText = totalSubmitted > 0
-    ? `${totalSubmitted} name${totalSubmitted === 1 ? '' : 's'} submitted (${girlCount} girl, ${boyCount} boy).`
-    : 'No names submitted yet.';
-
-  messageEl.textContent = totalText;
+  // Product team prefers not to show the running submission count here.
+  messageEl.textContent = '';
+  messageEl.style.display = 'none';
 }
 
 function showToast(message, type = '', duration = 3000) {
