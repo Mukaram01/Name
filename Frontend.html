@@ -1066,6 +1066,7 @@
       <!-- Voting Phase -->
       <div id="voting-section" class="card">
         <h2>Rate the Names</h2>
+        <h3 id="voting-greeting" style="color:var(--color-primary); text-align:center; margin-top: 0;">Welcome!</h3>
         <div class="quota-meters">
           <h4>Your Star Quota</h4>
           <div id="quota-display"></div>
@@ -1077,9 +1078,10 @@
 
       <!-- Reveal Phase -->
       <div id="reveal-section" class="card" style="text-align: center;">
-        
+
         <!-- 1. Header & Reveal -->
         <h1 style="color:var(--color-primary); margin-bottom: 10px;">The Grand Reveal!</h1>
+        <h3 id="reveal-greeting" style="color:var(--color-primary); text-align:center; margin-top: 0;">Welcome!</h3>
         <h2 style="margin-top: 0;">The baby's gender is...</h2>
         
         <div style="background: #fdfdfd; border: 2px dashed var(--color-secondary); padding: 20px; border-radius: 15px; margin: 20px 0;">
@@ -1855,6 +1857,11 @@ async function renderVoting() {
     STATE.voterState.votes = voterStateRes.votes;
     STATE.quota = quotaRes;
 
+    const greetingEl = $('#voting-greeting');
+    if (greetingEl) {
+      greetingEl.textContent = `Welcome, ${STATE.displayName}! Ready to rate the names?`;
+    }
+
     renderQuotaMeters();
     renderNameList();
   } catch (error) {
@@ -2182,6 +2189,11 @@ async function renderReveal() {
     }
 
     STATE.reveal = res;
+
+    const greetingEl = $('#reveal-greeting');
+    if (greetingEl) {
+      greetingEl.textContent = `Welcome, ${STATE.displayName}!`;
+    }
 
     const genderText = res.actualGender || 'Not yet revealed!';
     const genderEl = $('#actual-gender-display');
