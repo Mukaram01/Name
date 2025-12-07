@@ -22,6 +22,10 @@
       --spacing-sm: 8px;
       --spacing-md: 16px;
       --spacing-lg: 24px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
     }
 
     body.theme-girl {
@@ -46,7 +50,7 @@
 
     body {
       margin: 0;
-      padding: 0;
+      padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: radial-gradient(circle at 20% 20%, rgba(255, 224, 237, 0.6), transparent 35%),
         radial-gradient(circle at 80% 10%, rgba(223, 234, 255, 0.8), transparent 30%),
@@ -61,7 +65,7 @@
       max-width: 640px;
       margin: 0 auto;
       padding: clamp(14px, 4vw, 22px);
-      padding-bottom: 82px;
+      padding-bottom: calc(82px + var(--safe-bottom));
     }
 
     /* Header */
@@ -122,6 +126,13 @@
       .card {
         padding: var(--spacing-md);
         border-radius: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: calc(var(--spacing-md) + 2px);
+        margin-bottom: calc(var(--spacing-sm) + 4px);
       }
     }
 
@@ -251,6 +262,16 @@
       gap: var(--spacing-sm);
       margin-bottom: var(--spacing-md);
       align-items: stretch;
+    }
+
+    @media (max-width: 460px) {
+      .counter-box {
+        flex-direction: column;
+      }
+
+      .counter-item {
+        width: 100%;
+      }
     }
 
     .counter-item {
@@ -387,6 +408,17 @@
       }
     }
 
+    @media (max-width: 449px) {
+      .my-suggestion-actions {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .my-suggestion-actions button {
+        width: 100%;
+      }
+    }
+
     .my-suggestion-actions button {
       min-height: 38px;
       min-width: 70px;
@@ -427,6 +459,12 @@
       }
     }
 
+    @media (max-width: 499px) {
+      .name-item {
+        gap: var(--spacing-sm);
+      }
+    }
+
     .name-info {
       flex: 1;
       min-width: 0;
@@ -460,6 +498,19 @@
     @media (min-width: 500px) {
       .star-rating {
         justify-content: flex-end;
+      }
+    }
+
+    @media (max-width: 499px) {
+      .star-rating {
+        width: 100%;
+        justify-content: space-between;
+        gap: 6px;
+      }
+
+      .star-btn {
+        flex: 1;
+        min-width: 46px;
       }
     }
 
@@ -520,7 +571,7 @@
 
     .quota-summary {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: var(--spacing-sm);
       margin: 10px 0 var(--spacing-md);
     }
@@ -629,9 +680,10 @@
       background-color: rgba(0, 0, 0, 0.6);
       display: none;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       z-index: 1000;
-      padding: var(--spacing-md);
+      padding: calc(var(--spacing-md) + var(--safe-top)) var(--spacing-md) calc(var(--spacing-md) + var(--safe-bottom));
+      overflow-y: auto;
     }
 
     .modal-content {
@@ -645,6 +697,13 @@
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
       position: relative;
       -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 480px) {
+      .modal-content {
+        padding: var(--spacing-md);
+        border-radius: 12px;
+      }
     }
 
     .modal-close {
