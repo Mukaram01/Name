@@ -34,6 +34,19 @@ const COL_VOTES_SCORE = 3;
 const COL_VOTES_TIMESTAMP = 4;
 
 // ====================================================================================
+// UTILITY HELPERS
+// ====================================================================================
+
+/**
+ * Normalizes a person's identifier to a consistent, case-insensitive value.
+ * @param {string} name
+ * @returns {string}
+ */
+function _normalizePersonName(name) {
+  return String(name || '').trim().toLowerCase();
+}
+
+// ====================================================================================
 // CORE SERVICE FUNCTIONS (doGet/doPost)
 // ====================================================================================
 
@@ -243,9 +256,8 @@ function _getWinners(data, access) {
  * Token is now ignored.
  */
 function _getAccessLevel(name, token) {
-  if (!name) return { role: 'None', relation: '' };
-
-  const nameLower = String(name).trim().toLowerCase();
+  const nameLower = _normalizePersonName(name);
+  if (!nameLower) return { role: 'None', relation: '' };
   const peopleSheet = _getSheet(SH_PEOPLE);
   const peopleData = peopleSheet.getDataRange().getValues();
 
@@ -253,7 +265,7 @@ function _getAccessLevel(name, token) {
   if (peopleData.length > 1) {
     for (let i = 1; i < peopleData.length; i++) {
       const row = peopleData[i];
-      const rowName = String(row[COL_PEOPLE_NAME]).trim().toLowerCase();
+      const rowName = _normalizePersonName(row[COL_PEOPLE_NAME]);
 
       // Match Name Only (Ignore Token)
       if (rowName === nameLower) {
@@ -421,7 +433,7 @@ function _handleSuggest(data, access) {
   if (config.PHASE !== 'Nominations') return { success: false, error: "Nominations phase is closed." };
 
   const { name, gender, guess, relation, meaning } = data; // Added meaning
-  const suggester = String(data.person).trim().toLowerCase();
+  const suggester = _normalizePersonName(data.person);
 
   if (!name || !gender || !suggester || !guess || !relation) return { success: false, error: "Missing required fields." };
 
@@ -440,7 +452,7 @@ function _handleSuggest(data, access) {
 
   if (suggestionsData.length > 1) {
     for (let i = 1; i < suggestionsData.length; i++) {
-      const rowSuggester = String(suggestionsData[i][COL_SUGGESTIONS_SUGGESTER] || '').trim().toLowerCase();
+      const rowSuggester = _normalizePersonName(suggestionsData[i][COL_SUGGESTIONS_SUGGESTER]);
       const eName = String(suggestionsData[i][COL_SUGGESTIONS_NAME] || '').toLowerCase();
       const eGender = String(suggestionsData[i][COL_SUGGESTIONS_GENDER] || '').toLowerCase();
       
@@ -459,7 +471,7 @@ function _handleSuggest(data, access) {
   suggestionsSheet.appendRow([
     name,
     gender,
-    data.person,
+    suggester,
     guess,
     relation,
     new Date(),
@@ -481,7 +493,7 @@ function _handleVote(data, access) {
   }
 
   const { name, gender, score } = data;
-  const voter = data.person;
+  const voter = _normalizePersonName(data.person);
   const budgets = config.budgets;
 
   if (!name || !gender || !voter || !score) {
@@ -498,12 +510,12 @@ function _handleVote(data, access) {
   if (votesData.length > 1) {
     for (let i = 1; i < votesData.length; i++) {
       const row = votesData[i];
-      const rowVoter = row[COL_VOTES_VOTER];
+      const rowVoter = _normalizePersonName(row[COL_VOTES_VOTER]);
       const rowScore = row[COL_VOTES_SCORE];
       const rowName = row[COL_VOTES_NAME];
       const rowGender = row[COL_VOTES_GENDER];
 
-      if (rowVoter && rowVoter.toLowerCase() === voter.toLowerCase()) {
+      if (rowVoter && rowVoter === voter) {
         currentVotes[rowScore] = (currentVotes[rowScore] || 0) + 1;
 
         if (rowName && rowGender && rowName.toLowerCase() === name.toLowerCase() && rowGender.toLowerCase() === gender.toLowerCase()) {
@@ -554,7 +566,8 @@ function _getNames(data, access) {
       const name = row[COL_SUGGESTIONS_NAME];
       const gender = row[COL_SUGGESTIONS_GENDER];
       const meaning = row[COL_SUGGESTIONS_MEANING]; // Read meaning
-      
+      const suggesterName = _normalizePersonName(row[COL_SUGGESTIONS_SUGGESTER]);
+
       if (!name || !gender) continue;
       const key = name.toLowerCase() + "|" + gender.toLowerCase();
 
@@ -566,7 +579,7 @@ function _getNames(data, access) {
           meanings: new Set() // Store unique meanings
         };
       }
-      distinctNames[key].suggesters.add(row[COL_SUGGESTIONS_SUGGESTER]);
+      if (suggesterName) distinctNames[key].suggesters.add(suggesterName);
       if (meaning) distinctNames[key].meanings.add(meaning);
     }
   }
@@ -584,7 +597,7 @@ function _getNames(data, access) {
  * Gets the current voting state (all votes) for a specific voter.
  */
 function _getVoterState(data, access) {
-  const voter = data.person;
+  const voter = _normalizePersonName(data.person);
   const votesSheet = _getSheet(SH_VOTES);
   const votesData = votesSheet.getDataRange().getValues();
   const voterVotes = {};
@@ -592,7 +605,8 @@ function _getVoterState(data, access) {
   if (votesData.length > 1) {
     for (let i = 1; i < votesData.length; i++) {
       const row = votesData[i];
-      if (row[COL_VOTES_VOTER] && row[COL_VOTES_VOTER].toLowerCase() === voter.toLowerCase()) {
+      const rowVoter = _normalizePersonName(row[COL_VOTES_VOTER]);
+      if (rowVoter && rowVoter === voter) {
         const name = row[COL_VOTES_NAME];
         const gender = row[COL_VOTES_GENDER];
         const score = row[COL_VOTES_SCORE];
@@ -612,7 +626,7 @@ function _getVoterState(data, access) {
  */
 function _getQuota(data, access) {
   const config = _readConfig();
-  const voter = data.person;
+  const voter = _normalizePersonName(data.person);
   const votesSheet = _getSheet(SH_VOTES);
   const votesData = votesSheet.getDataRange().getValues();
   const budgets = config.budgets;
@@ -626,7 +640,8 @@ function _getQuota(data, access) {
   if (votesData.length > 1) {
     for (let i = 1; i < votesData.length; i++) {
       const row = votesData[i];
-      if (row[COL_VOTES_VOTER] && row[COL_VOTES_VOTER].toLowerCase() === voter.toLowerCase()) {
+      const rowVoter = _normalizePersonName(row[COL_VOTES_VOTER]);
+      if (rowVoter && rowVoter === voter) {
         const score = row[COL_VOTES_SCORE];
         if (usage.hasOwnProperty(score)) {
           usage[score]++;
@@ -643,7 +658,7 @@ function _getQuota(data, access) {
  */
 function _handleRequest(data, access) {
   const { type, details } = data;
-  const requester = data.person;
+  const requester = _normalizePersonName(data.person);
 
   if (!type || !details || !requester) {
     return { success: false, error: "Missing required fields." };
@@ -1166,7 +1181,7 @@ function setupSheets() {
  */
 function _getMySuggestions(data, access) {
   const personRaw = data.person || '';
-  const person = String(personRaw).trim().toLowerCase();
+  const person = _normalizePersonName(personRaw);
   const sheet = _getSheet(SH_SUGGESTIONS);
   const values = sheet.getDataRange().getValues();
   const items = [];
@@ -1178,7 +1193,7 @@ function _getMySuggestions(data, access) {
   if (values.length > 1) {
     for (let i = 1; i < values.length; i++) {
       const row = values[i];
-      const suggester = String(row[COL_SUGGESTIONS_SUGGESTER] || '').trim().toLowerCase();
+      const suggester = _normalizePersonName(row[COL_SUGGESTIONS_SUGGESTER]);
       
       if (suggester === person) {
         // Safe Date Handling: Convert to string or use empty string if invalid
@@ -1208,7 +1223,12 @@ function _updateSuggestion(data, access) {
   const sheet = _getSheet(SH_SUGGESTIONS);
   const rowId = Number(data.id);
   const personRaw = data.person || '';
-  const person = String(personRaw).trim().toLowerCase();
+  const person = _normalizePersonName(personRaw);
+  const config = _readConfig();
+
+  if (config.PHASE !== 'Nominations') {
+    return { success: false, error: "Suggestions can only be edited during the nominations phase." };
+  }
 
   if (!rowId || rowId < 2 || rowId > sheet.getLastRow()) {
     return { success: false, error: "Invalid suggestion id." };
@@ -1216,7 +1236,7 @@ function _updateSuggestion(data, access) {
 
   // Read 7 columns now (including Meaning)
   const row = sheet.getRange(rowId, 1, 1, 7).getValues()[0];
-  const suggester = String(row[COL_SUGGESTIONS_SUGGESTER] || '').trim().toLowerCase();
+  const suggester = _normalizePersonName(row[COL_SUGGESTIONS_SUGGESTER]);
   
   if (!person || suggester !== person) {
     return { success: false, error: "You can only edit your own suggestions." };
@@ -1254,14 +1274,14 @@ function _deleteSuggestion(data, access) {
   const sheet = _getSheet(SH_SUGGESTIONS);
   const rowId = Number(data.id);
   const personRaw = data.person || '';
-  const person = String(personRaw).trim().toLowerCase();
+  const person = _normalizePersonName(personRaw);
 
   if (!rowId || rowId < 2 || rowId > sheet.getLastRow()) {
     return { success: false, error: "Invalid suggestion id." };
   }
 
   const row = sheet.getRange(rowId, 1, 1, 6).getValues()[0];
-  const suggester = String(row[COL_SUGGESTIONS_SUGGESTER] || '').trim().toLowerCase();
+  const suggester = _normalizePersonName(row[COL_SUGGESTIONS_SUGGESTER]);
   if (!person || suggester !== person) {
     return { success: false, error: "You can only delete your own suggestions." };
   }
