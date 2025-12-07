@@ -1170,6 +1170,7 @@
 // Global State
 const STATE = {
   person: '',
+  displayName: '',
   token: '',
   role: 'None',
   phase: 'Loading',
@@ -1190,6 +1191,11 @@ const STATE = {
 
 function $(selector) {
   return document.querySelector(selector);
+}
+
+function formatDisplayName(name) {
+  if (!name) return '';
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 function showLoading() {
@@ -1276,7 +1282,9 @@ function postJSON(data) {
 // --- AUTHENTICATION ---
 
 async function authenticate() {
-  STATE.person = $('#voter-name').value.trim();
+  const rawName = $('#voter-name').value.trim();
+  STATE.person = rawName.toLowerCase();
+  STATE.displayName = formatDisplayName(rawName);
   STATE.token = 'family-access';
 
   if (!STATE.person) {
@@ -1296,7 +1304,7 @@ async function authenticate() {
       STATE.config = status.config;
       STATE.counters = status.counters || {};
 
-      showToast(`👋 Welcome, ${STATE.person}!`, 'success');
+      showToast(`👋 Welcome, ${STATE.displayName}!`, 'success');
 
       $('#auth-section').style.display = 'none';
       $('#main-content').style.display = 'block';
@@ -1522,7 +1530,7 @@ let EDITING_SUGGESTION_ID = null;
 async function renderNominations() {
   const greetingEl = $('#nomination-greeting');
   if (greetingEl) {
-    greetingEl.textContent = `Welcome, ${STATE.person}!`;
+    greetingEl.textContent = `Welcome, ${STATE.displayName}!`;
   }
 
   updateCounterValue('girl-count', (STATE.counters && STATE.counters.girl) || 0);
