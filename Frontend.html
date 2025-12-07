@@ -2092,35 +2092,74 @@ async function handleSwap(oldName, oldGender, oldScore) {
   const { name: newName, gender: newGender, score: newScore } = swapTarget;
 
   const oldKey = oldName + '|' + oldGender;
-  updateLocalVote(oldKey, 0, oldName, oldGender);
-
   const newKey = newName + '|' + newGender;
-  updateLocalVote(newKey, newScore, newName, newGender);
+
+  const originalUsage = { ...STATE.quota.usage };
+  const originalOldScore = STATE.voterState.votes[oldKey] || 0;
+  const originalNewScore = STATE.voterState.votes[newKey] || 0;
+
+  const revertState = () => {
+    STATE.quota.usage = { ...originalUsage };
+
+    if (originalOldScore === 0) {
+      delete STATE.voterState.votes[oldKey];
+    } else {
+      STATE.voterState.votes[oldKey] = originalOldScore;
+    }
+
+    if (originalNewScore === 0) {
+      delete STATE.voterState.votes[newKey];
+    } else {
+      STATE.voterState.votes[newKey] = originalNewScore;
+    }
+
+    updateStarButtons(oldName, oldGender, originalOldScore);
+    updateStarButtons(newName, newGender, originalNewScore);
+    renderQuotaMeters();
+  };
+
+  let downgradeApplied = false;
 
   showLoading();
   try {
-    const res = await postJSON({
+    const downgradeRes = await postJSON({
       mode: 'vote',
-      name:  newName,
+      name: oldName,
+      gender: oldGender,
+      score: 0
+    });
+
+    if (!downgradeRes.success) {
+      hideLoading();
+      showToast(`Swap failed: ${downgradeRes.error || 'Could not downgrade existing vote.'}`, 'error', 4000);
+      return;
+    }
+
+    downgradeApplied = true;
+    updateLocalVote(oldKey, 0, oldName, oldGender);
+
+    const newVoteRes = await postJSON({
+      mode: 'vote',
+      name: newName,
       gender: newGender,
       score: newScore
     });
     hideLoading();
 
-    if (res.success) {
+    if (newVoteRes.success) {
+      updateLocalVote(newKey, newScore, newName, newGender);
+      await refreshQuota();
       closeSwapModal();
-      showAlert('Vote Applied', `Your vote for "${newName}" has been recorded. You still have a ${oldScore}-star vote on "${oldName}". You can downgrade it manually if you wish to free up that slot.`);
-      renderNameList();
+      showAlert('Swap Applied', `Your ${oldScore}-star vote for "${oldName}" was downgraded and your ${newScore}-star vote for "${newName}" has been recorded.`);
     } else {
-      // Revert both changes
-      updateLocalVote(oldKey, oldScore, oldName, oldGender);
-      updateLocalVote(newKey, 0, newName, newGender);
-      showToast(`Swap failed: ${res.error}`, 'error', 4000);
+      revertState();
+      showToast(`Swap failed: ${newVoteRes.error || 'Could not apply new vote.'}`, 'error', 4000);
     }
   } catch (error) {
     hideLoading();
-    updateLocalVote(oldKey, oldScore, oldName, oldGender);
-    updateLocalVote(newKey, 0, newName, newGender);
+    if (downgradeApplied) {
+      revertState();
+    }
     showToast('Network error during swap. Please try again.', 'error');
   }
 }
